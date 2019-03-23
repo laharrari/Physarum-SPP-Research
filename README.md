@@ -1,1 +1,1 @@
-Directed Research TCSS 499
+Directed Research with Dr. Chris Marriot, Ph.D.
