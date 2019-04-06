@@ -54,6 +54,27 @@ Animation.prototype.isDone = function () {
     return (this.elapsedTime >= this.totalTime);
 }
 
+// Edge to handle the flow between nodes.
+// Represented as a cylindrical tube.
+function Edge(conductivity, length, startNode, endNode) {
+    this.conductivity = conductivity; // D variable in the paper, the thickness of the tube.
+    this.length = length; // L variable in the paper, the length of the tube.
+    this.flux = 0; // Q variable in the paper, the flux of the tube between two nodes.
+    this.startNode = startNode; // A starting node.
+    this.endNode = endNode; // An ending node.
+}
+
+// Method to calculate flux between two nodes, the Q variable in the paper.
+Edge.prototype.calculateFlux = function () {
+    this.flux = (this.conductivity * (this.startNode.pressure - this.endNode.pressure)) / this.length;
+}
+
+Edge.prototype.calculateConductivity = function () {
+    // Calculate the rate of change in conductivity.
+    var rateOfChange = Math.abs(this.conductivity) - this.conductivity;
+    // Update conductivity.
+    this.conductivity -= rateOfChange;
+}
 
 var ASSET_MANAGER = new AssetManager();
 
