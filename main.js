@@ -1,3 +1,6 @@
+var Fraction = algebra.Fraction;
+var Expression = algebra.Expression;
+var Equation = algebra.Equation;
 var GAME_ENGINE = new GameEngine();
 
 function Animation(spriteSheet, startX, startY, frameWidth, frameHeight, frameDuration, frames, loop, reverse) {
@@ -54,6 +57,19 @@ Animation.prototype.isDone = function () {
     return (this.elapsedTime >= this.totalTime);
 }
 
+/**
+ * Food source nodes and other nodes in the system.
+ * 
+ * @param {*} theNodeLabel the label number for the node
+ * @param {*} theIsFoodSource boolean for whether the node is a food source or not
+ */
+function Node(theNodeLabel, theIsFoodSource) {
+    this.pressure = 0;
+    this.nodeLabel = theNodeLabel;
+    this.isFoodSource = theIsFoodSource;
+}
+
+
 // Edge to handle the flow between nodes.
 // Represented as a cylindrical tube.
 function Edge(conductivity, length, startNode, endNode) {
@@ -74,6 +90,19 @@ Edge.prototype.calculateConductivity = function () {
     var rateOfChange = Math.abs(this.conductivity) - this.conductivity;
     // Update conductivity.
     this.conductivity -= rateOfChange;
+}
+
+/**
+ * Calculate pressure for all nodes.
+ * 
+ * @param {*} theNodes list of all the nodes in the system
+ */
+function calculateAllPressure(theNodes) {
+    //pressure for sink node = 0
+    theNodes[theNodes.length - 1] = 0;
+    for (let i = 0; i < theNodes.length - 1; i++) {
+
+    }
 }
 
 var ASSET_MANAGER = new AssetManager();
