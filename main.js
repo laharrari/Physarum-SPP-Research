@@ -2,6 +2,8 @@ var Fraction = algebra.Fraction;
 var Expression = algebra.Expression;
 var Equation = algebra.Equation;
 var GAME_ENGINE = new GameEngine();
+var EDGES = [];
+var NODE_RELATIONS = new Map();
 
 function Animation(spriteSheet, startX, startY, frameWidth, frameHeight, frameDuration, frames, loop, reverse) {
     this.spriteSheet = spriteSheet;
@@ -42,11 +44,11 @@ Animation.prototype.drawFrame = function (tick, ctx, x, y, scaleBy) {
     var locY = y;
     var offset = vindex === 0 ? this.startX : 0;
     ctx.drawImage(this.spriteSheet,
-                  index * this.frameWidth + offset, vindex * this.frameHeight + this.startY,  // source from sheet
-                  this.frameWidth, this.frameHeight,
-                  locX, locY,
-                  this.frameWidth * scaleBy,
-                  this.frameHeight * scaleBy);
+        index * this.frameWidth + offset, vindex * this.frameHeight + this.startY,  // source from sheet
+        this.frameWidth, this.frameHeight,
+        locX, locY,
+        this.frameWidth * scaleBy,
+        this.frameHeight * scaleBy);
 }
 
 Animation.prototype.currentFrame = function () {
@@ -78,6 +80,10 @@ function Edge(conductivity, length, startNode, endNode) {
     this.flux = 0; // Q variable in the paper, the flux of the tube between two nodes.
     this.startNode = startNode; // A starting node.
     this.endNode = endNode; // An ending node.
+
+    // Explicitly declaring the two nodes as sharing an edge, having a relation.
+    this.updateNodeRelations(this.startNode, this.endNode);
+    this.updateNodeRelations(this.endNode, this.startNode);
 }
 
 // Method to calculate flux between two nodes, the Q variable in the paper.
@@ -90,6 +96,19 @@ Edge.prototype.calculateConductivity = function () {
     var rateOfChange = Math.abs(this.conductivity) - this.conductivity;
     // Update conductivity.
     this.conductivity -= rateOfChange;
+}
+
+Edge.prototype.updateNodeRelations = function (i, j) {
+    // Variable to remember previous values of a key in the map NODE_RELATIONS.
+    var mapVals = [];
+    // If key already exists grab previous values of the key.
+    if (NODE_RELATIONS.has(i.nodeLabel)) {
+        mapVals = [NODE_RELATIONS.get(i.nodeLabel)];
+    }
+    // Push the new label into mapVals.
+    mapVals.push(j.nodeLabel);
+    // Update NODE_RELATIONS key.
+    NODE_RELATIONS.set(i.nodeLabel, mapVals);
 }
 
 /**
@@ -112,7 +131,7 @@ ASSET_MANAGER.queueDownload("./img/physarum.jpg");
 ASSET_MANAGER.downloadAll(function () {
     var canvas = document.getElementById('gameWorld');
     var ctx = canvas.getContext('2d');
- 
+
     GAME_ENGINE.init(ctx);
     GAME_ENGINE.start();
 });
