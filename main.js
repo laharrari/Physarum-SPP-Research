@@ -2,6 +2,7 @@ var Fraction = algebra.Fraction;
 var Expression = algebra.Expression;
 var Equation = algebra.Equation;
 var GAME_ENGINE = new GameEngine();
+var SIMULATION = new Simulation();
 var EDGES = [];
 var NODES = [];
 var NODE_RELATIONS = new Map();
@@ -60,6 +61,35 @@ Animation.prototype.isDone = function () {
     return (this.elapsedTime >= this.totalTime);
 }
 
+function Simulation() {
+    this.iterationCount = 0;
+}
+
+Simulation.prototype.draw = function () {
+    GAME_ENGINE.ctx.font = "20px Arial";
+    GAME_ENGINE.ctx.fillStyle = "black";
+    GAME_ENGINE.ctx.fillText("Iteration: " + this.iterationCount, 0, 20);
+}
+
+Simulation.prototype.update = function () {
+    
+}
+
+/**
+ * Next iteration in finding the shortest path.
+ */
+Simulation.prototype.nextIteration = function () {
+    calculateAllPressure();
+    for (let i = 0; i < EDGES.length; i++) {
+        EDGES[i].calculateFlux();
+    }
+    for (let j = 0; j < EDGES.length; j++) {
+        EDGES[j].calculateConductivity();
+    }
+    this.iterationCount++;
+    console.log("------------------------");
+}
+
 /**
  * Food source nodes and other nodes in the system.
  * 
@@ -90,13 +120,16 @@ function Edge(conductivity, length, startNode, endNode) {
 // Method to calculate flux between two nodes, the Q variable in the paper.
 Edge.prototype.calculateFlux = function () {
     this.flux = (this.conductivity * (this.startNode.pressure - this.endNode.pressure)) / this.length;
+    console.log("Q" + this.startNode.nodeLabel + this.endNode.nodeLabel + ": " + this.flux);
 }
 
 Edge.prototype.calculateConductivity = function () {
     // Calculate the rate of change in conductivity.
-    var rateOfChange = Math.abs(this.conductivity) - this.conductivity;
+    var rateOfChange = Math.abs(this.flux) - this.conductivity;
     // Update conductivity.
     this.conductivity -= rateOfChange;
+
+    console.log("D" + this.startNode.nodeLabel + this.endNode.nodeLabel + ": " + this.conductivity);
 }
 
 Edge.prototype.updateNodeRelations = function (i, j) {
@@ -124,24 +157,22 @@ function calculateAllPressure() {
 
     var edge1 = EDGES[2]; //M32
     var x1 = algebra.parse(edge1.conductivity + "/" + edge1.length + " * p3");// D32/L32(p3 - p2)
-    console.log("x1: " + x1);
 
     var edge2 = EDGES[3]; // M42
     var x2 = algebra.parse(edge2.conductivity + "/" + edge2.length + " * p3");// D42/L42(p4 - p2)
-    console.log("x2: " + x2);
 
     var summation = algebra.parse(x1 + "+" + x2);// D32/L32(p3 - p2) + D42/L42(p4 - p2)
-    console.log("summation: " + summation);
 
     var eq = new Equation(summation, algebra.parse("1"));// D32/L32(p3 - p2) + D42/L42(p4 - p2) = 1
     var answer = eq.solveFor("p3"); //solve for p3, p3 = p4
-    console.log("eq: " + eq);
-    console.log("answer: "  + answer);
-
 
     NODES[2].pressure = answer; 
     NODES[3].pressure = answer;
     NODES[0].pressure = answer * 2; //p1 = 2p3
+
+    for (let i = 0; i < NODES.length; i++) {
+        console.log("p" + NODES[i].nodeLabel + ": " + NODES[i].pressure);
+    }
 }
 
 var ASSET_MANAGER = new AssetManager();
@@ -151,9 +182,10 @@ ASSET_MANAGER.queueDownload("./img/physarum.jpg");
 ASSET_MANAGER.downloadAll(function () {
     var canvas = document.getElementById('gameWorld');
     var ctx = canvas.getContext('2d');
-
+    document.body.style.backgroundColor = "lightblue";
     GAME_ENGINE.init(ctx);
     GAME_ENGINE.start();
+    GAME_ENGINE.addEntity(SIMULATION);
 
     //creating all node objects
     var n1 = new Node(1, true);
@@ -171,6 +203,4 @@ ASSET_MANAGER.downloadAll(function () {
     EDGES[1] = new Edge(1, 2, n1, n4);
     EDGES[2] = new Edge(1, 1, n3, n2);
     EDGES[3] = new Edge(1, 2, n4, n2);
-
-    calculateAllPressure();
 });

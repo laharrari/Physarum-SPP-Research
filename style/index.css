@@ -1,0 +1,19 @@
+canvas {
+    border: 1px solid black;
+    background: lightskyblue;
+}
+
+
+#sidebar {
+    position: absolute;
+    left: 101%;
+    top: 0%;
+    width: 100%;
+}
+
+.wrapper {
+    margin: 0 auto;
+    width: 500px;
+    height: 500px;
+    position: relative;
+}
