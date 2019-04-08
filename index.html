@@ -1,15 +1,23 @@
-﻿
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html>
+
 <head>
     <meta charset="utf-8">
     <title>Game Project Shell</title>
+    <link href="style/index.css" rel="stylesheet" type="text/css">
     <script src="algebra-0.2.6.min.js"></script>
     <script type="text/javascript" src="./gameengine.js"></script>
     <script type="text/javascript" src="./assetmanager.js"></script>
     <script type="text/javascript" src="./main.js"></script>
 </head>
+
 <body>
-    <canvas id="gameWorld" tabindex="1" width="800" height="800" style="border: 1px solid brown; background: lightskyblue"></canvas>
+    <div class="wrapper">
+        <canvas id="gameWorld" tabindex="1" width="500" height="500"></canvas>
+        <div id="sidebar">
+            <h3>Next Iteration: S</h3>
+        </div>
+    </div>
 </body>
+
 </html>
