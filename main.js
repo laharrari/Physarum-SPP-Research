@@ -127,6 +127,7 @@ function Edge(conductivity, length, startNode, endNode) {
  */
 Edge.prototype.calculateFlux = function () {
     this.flux = (this.conductivity * (this.startNode.pressure - this.endNode.pressure)) / this.length;
+    
     console.log("Q" + this.startNode.nodeLabel + this.endNode.nodeLabel + ": " + this.flux);
 }
 
