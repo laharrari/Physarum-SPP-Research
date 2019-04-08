@@ -8,7 +8,8 @@ var NODES = [];
 var NODE_RELATIONS = new Map();
 
 function Simulation() {
-    this.iterationCount = 0;
+    this.iterationCount = 1;
+    this.stopSimulation = false;
 }
 
 Simulation.prototype.draw = function () {
@@ -18,7 +19,9 @@ Simulation.prototype.draw = function () {
 }
 
 Simulation.prototype.update = function () {
-    this.nextIteration();
+    if (!this.stopSimulation) {
+        this.nextIteration();
+    }
 }
 
 /**
@@ -33,6 +36,14 @@ Simulation.prototype.nextIteration = function () {
         edge.calculateConductivity();
         console.log("Q" + edge.startNode.nodeLabel + edge.endNode.nodeLabel + ": " + edge.flux);
         console.log("D" + edge.startNode.nodeLabel + edge.endNode.nodeLabel + ": " + edge.conductivity);
+        //condition to stop simulation: flux of one of the path converges to 0
+        if (edge.conductivity < 0.00001 || edge.flux < 0.00001) {
+            this.stopSimulation = true;
+        }
+    }
+    // do not update last iteration count when condition to stop is met
+    if (this.stopSimulation) {
+        return;
     }
     this.iterationCount++;
     console.log("");
