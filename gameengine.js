@@ -54,12 +54,12 @@ GameEngine.prototype.start = function () {
 
 GameEngine.prototype.startInput = function () {
     var that = this;
-
-    this.ctx.canvas.addEventListener("keydown", function (e) {
-        if (e.code === "KeyS") {
-            SIMULATION.nextIteration();
-        } 
-    });
+    //REMOVE LATER: KEY LISTENERS FOR STEPPING TO NEXT ITERATION
+    // this.ctx.canvas.addEventListener("keydown", function (e) {
+    //     if (e.code === "KeyS") {
+    //         SIMULATION.nextIteration();
+    //     } 
+    // });
 }
 
 GameEngine.prototype.addEntity = function (entity) {

@@ -7,60 +7,6 @@ var EDGES = [];
 var NODES = [];
 var NODE_RELATIONS = new Map();
 
-function Animation(spriteSheet, startX, startY, frameWidth, frameHeight, frameDuration, frames, loop, reverse) {
-    this.spriteSheet = spriteSheet;
-    this.startX = startX;
-    this.startY = startY;
-    this.frameWidth = frameWidth;
-    this.frameDuration = frameDuration;
-    this.frameHeight = frameHeight;
-    this.frames = frames;
-    this.totalTime = frameDuration * frames;
-    this.elapsedTime = 0;
-    this.loop = loop;
-    this.reverse = reverse;
-}
-
-Animation.prototype.drawFrame = function (tick, ctx, x, y, scaleBy) {
-    var scaleBy = scaleBy || 1;
-    this.elapsedTime += tick;
-    if (this.loop) {
-        if (this.isDone()) {
-            this.elapsedTime = 0;
-        }
-    } else if (this.isDone()) {
-        return;
-    }
-    var index = this.reverse ? this.frames - this.currentFrame() - 1 : this.currentFrame();
-    var vindex = 0;
-    if ((index + 1) * this.frameWidth + this.startX > this.spriteSheet.width) {
-        index -= Math.floor((this.spriteSheet.width - this.startX) / this.frameWidth);
-        vindex++;
-    }
-    while ((index + 1) * this.frameWidth > this.spriteSheet.width) {
-        index -= Math.floor(this.spriteSheet.width / this.frameWidth);
-        vindex++;
-    }
-
-    var locX = x;
-    var locY = y;
-    var offset = vindex === 0 ? this.startX : 0;
-    ctx.drawImage(this.spriteSheet,
-        index * this.frameWidth + offset, vindex * this.frameHeight + this.startY,  // source from sheet
-        this.frameWidth, this.frameHeight,
-        locX, locY,
-        this.frameWidth * scaleBy,
-        this.frameHeight * scaleBy);
-}
-
-Animation.prototype.currentFrame = function () {
-    return Math.floor(this.elapsedTime / this.frameDuration);
-}
-
-Animation.prototype.isDone = function () {
-    return (this.elapsedTime >= this.totalTime);
-}
-
 function Simulation() {
     this.iterationCount = 0;
 }
@@ -72,22 +18,24 @@ Simulation.prototype.draw = function () {
 }
 
 Simulation.prototype.update = function () {
-    
+    this.nextIteration();
 }
 
 /**
  * Next iteration in finding the shortest path.
  */
 Simulation.prototype.nextIteration = function () {
+    console.log("Iteration: " + this.iterationCount);
     calculateAllPressure();
     for (let i = 0; i < EDGES.length; i++) {
-        EDGES[i].calculateFlux();
-    }
-    for (let j = 0; j < EDGES.length; j++) {
-        EDGES[j].calculateConductivity();
+        var edge = EDGES[i];
+        edge.calculateFlux();
+        edge.calculateConductivity();
+        console.log("Q" + edge.startNode.nodeLabel + edge.endNode.nodeLabel + ": " + edge.flux);
+        console.log("D" + edge.startNode.nodeLabel + edge.endNode.nodeLabel + ": " + edge.conductivity);
     }
     this.iterationCount++;
-    console.log("------------------------");
+    console.log("");
 }
 
 /**
@@ -120,7 +68,6 @@ function Edge(conductivity, length, startNode, endNode) {
 // Method to calculate flux between two nodes, the Q variable in the paper.
 Edge.prototype.calculateFlux = function () {
     this.flux = (this.conductivity * (this.startNode.pressure - this.endNode.pressure)) / this.length;
-    console.log("Q" + this.startNode.nodeLabel + this.endNode.nodeLabel + ": " + this.flux);
 }
 
 // Method to calculate conductivity of an edge.
@@ -129,8 +76,6 @@ Edge.prototype.calculateConductivity = function () {
     var rateOfChange = Math.abs(this.flux) - this.conductivity;
     // Update conductivity.
     this.conductivity += rateOfChange;
-
-    console.log("D" + this.startNode.nodeLabel + this.endNode.nodeLabel + ": " + this.conductivity);
 }
 
 // Method to relate nodes via edges.
