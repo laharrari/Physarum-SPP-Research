@@ -200,7 +200,7 @@ ASSET_MANAGER.downloadAll(function () {
     GAME_ENGINE.start();
     GAME_ENGINE.addEntity(SIMULATION);
 
-    //creating all node objects
+    // Creating all node objects
     var n1 = new Node(1, true);
     var n2 = new Node(2, true);
     var n3 = new Node(3, false);
@@ -211,7 +211,7 @@ ASSET_MANAGER.downloadAll(function () {
     NODES[2] = n3;
     NODES[3] = n4;
 
-    //creating all edge objects
+    // Creating all edge objects
     EDGES[0] = new Edge(1, 1, n1, n3);
     EDGES[1] = new Edge(1, 2, n1, n4);
     EDGES[2] = new Edge(1, 1, n3, n2);
