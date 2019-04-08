@@ -50,9 +50,14 @@ function Node(theNodeLabel, theIsFoodSource) {
     this.isFoodSource = theIsFoodSource;
 }
 
-
-// Edge to handle the flow between nodes.
-// Represented as a cylindrical tube.
+/**
+ * Edge to handle the flow between nodes. Represented as a cyldrinical tube.
+ * 
+ * @param {*} conductivity the conductivity of the edge
+ * @param {*} length the length of the edge
+ * @param {*} startNode the starting node
+ * @param {*} endNode the ending node
+ */
 function Edge(conductivity, length, startNode, endNode) {
     this.conductivity = conductivity; // D variable in the paper, the thickness of the tube.
     this.length = length; // L variable in the paper, the length of the tube.
@@ -65,12 +70,16 @@ function Edge(conductivity, length, startNode, endNode) {
     this.updateNodeRelations(this.endNode, this.startNode);
 }
 
-// Method to calculate flux between two nodes, the Q variable in the paper.
+/**
+ * Method to calculate flux between two nodes, the Q variable in the paper.
+ */
 Edge.prototype.calculateFlux = function () {
     this.flux = (this.conductivity * (this.startNode.pressure - this.endNode.pressure)) / this.length;
 }
 
-// Method to calculate conductivity of an edge.
+/**
+ * Method to calculate conductivity of an edge.
+ */
 Edge.prototype.calculateConductivity = function () {
     // Calculate the rate of change in conductivity.
     var rateOfChange = Math.abs(this.flux) - this.conductivity;
@@ -78,7 +87,9 @@ Edge.prototype.calculateConductivity = function () {
     this.conductivity += rateOfChange;
 }
 
-// Method to relate nodes via edges.
+/**
+ * Method to relate nodes via edges.
+ */
 Edge.prototype.updateNodeRelations = function (i, j) {
     // Variable to remember previous values of a key in the map NODE_RELATIONS.
     var mapVals = [];
@@ -123,7 +134,7 @@ function calculateAllPressure() {
 
 var ASSET_MANAGER = new AssetManager();
 
-ASSET_MANAGER.queueDownload("./img/physarum.jpg");
+//ASSET_MANAGER.queueDownload("./img/physarum.jpg");
 
 ASSET_MANAGER.downloadAll(function () {
     var canvas = document.getElementById('gameWorld');
@@ -133,7 +144,7 @@ ASSET_MANAGER.downloadAll(function () {
     GAME_ENGINE.start();
     GAME_ENGINE.addEntity(SIMULATION);
 
-    //creating all node objects
+    // Creating all node objects
     var n1 = new Node(1, true);
     var n2 = new Node(2, true);
     var n3 = new Node(3, false);
@@ -144,7 +155,7 @@ ASSET_MANAGER.downloadAll(function () {
     NODES[2] = n3;
     NODES[3] = n4;
 
-    //creating all edge objects
+    // Creating all edge objects
     EDGES[0] = new Edge(1, 1, n1, n3);
     EDGES[1] = new Edge(1, 2, n1, n4);
     EDGES[2] = new Edge(1, 1, n3, n2);
