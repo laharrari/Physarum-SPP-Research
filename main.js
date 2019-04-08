@@ -3,6 +3,7 @@ var Expression = algebra.Expression;
 var Equation = algebra.Equation;
 var GAME_ENGINE = new GameEngine();
 var EDGES = [];
+var NODES = [];
 var NODE_RELATIONS = new Map();
 
 function Animation(spriteSheet, startX, startY, frameWidth, frameHeight, frameDuration, frames, loop, reverse) {
@@ -113,15 +114,34 @@ Edge.prototype.updateNodeRelations = function (i, j) {
 
 /**
  * Calculate pressure for all nodes.
+ * HARDCODING FOR 4 NODES FOR NOW
  * 
  * @param {*} theNodes list of all the nodes in the system
  */
-function calculateAllPressure(theNodes) {
+function calculateAllPressure() {
     //pressure for sink node = 0
-    theNodes[theNodes.length - 1] = 0;
-    for (let i = 0; i < theNodes.length - 1; i++) {
+    NODES[1].pressure = 0;
 
-    }
+    var edge1 = EDGES[2]; //M32
+    var x1 = algebra.parse(edge1.conductivity + "/" + edge1.length + " * p3");// D32/L32(p3 - p2)
+    console.log("x1: " + x1);
+
+    var edge2 = EDGES[3]; // M42
+    var x2 = algebra.parse(edge2.conductivity + "/" + edge2.length + " * p3");// D42/L42(p4 - p2)
+    console.log("x2: " + x2);
+
+    var summation = algebra.parse(x1 + "+" + x2);// D32/L32(p3 - p2) + D42/L42(p4 - p2)
+    console.log("summation: " + summation);
+
+    var eq = new Equation(summation, algebra.parse("1"));// D32/L32(p3 - p2) + D42/L42(p4 - p2) = 1
+    var answer = eq.solveFor("p3"); //solve for p3, p3 = p4
+    console.log("eq: " + eq);
+    console.log("answer: "  + answer);
+
+
+    NODES[2].pressure = answer; 
+    NODES[3].pressure = answer;
+    NODES[0].pressure = answer * 2; //p1 = 2p3
 }
 
 var ASSET_MANAGER = new AssetManager();
@@ -134,4 +154,23 @@ ASSET_MANAGER.downloadAll(function () {
 
     GAME_ENGINE.init(ctx);
     GAME_ENGINE.start();
+
+    //creating all node objects
+    var n1 = new Node(1, true);
+    var n2 = new Node(2, true);
+    var n3 = new Node(3, false);
+    var n4 = new Node(4, false);
+
+    NODES[0] = n1;
+    NODES[1] = n2;
+    NODES[2] = n3;
+    NODES[3] = n4;
+
+    //creating all edge objects
+    EDGES[0] = new Edge(1, 1, n1, n3);
+    EDGES[1] = new Edge(1, 2, n1, n4);
+    EDGES[2] = new Edge(1, 1, n3, n2);
+    EDGES[3] = new Edge(1, 2, n4, n2);
+
+    calculateAllPressure();
 });
