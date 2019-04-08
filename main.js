@@ -123,15 +123,17 @@ Edge.prototype.calculateFlux = function () {
     console.log("Q" + this.startNode.nodeLabel + this.endNode.nodeLabel + ": " + this.flux);
 }
 
+// Method to calculate conductivity of an edge.
 Edge.prototype.calculateConductivity = function () {
     // Calculate the rate of change in conductivity.
     var rateOfChange = Math.abs(this.flux) - this.conductivity;
     // Update conductivity.
-    this.conductivity -= rateOfChange;
+    this.conductivity += rateOfChange;
 
     console.log("D" + this.startNode.nodeLabel + this.endNode.nodeLabel + ": " + this.conductivity);
 }
 
+// Method to relate nodes via edges.
 Edge.prototype.updateNodeRelations = function (i, j) {
     // Variable to remember previous values of a key in the map NODE_RELATIONS.
     var mapVals = [];
@@ -165,8 +167,7 @@ function calculateAllPressure() {
 
     var eq = new Equation(summation, algebra.parse("1"));// D32/L32(p3 - p2) + D42/L42(p4 - p2) = 1
     var answer = eq.solveFor("p3"); //solve for p3, p3 = p4
-
-    NODES[2].pressure = answer; 
+    NODES[2].pressure = answer;
     NODES[3].pressure = answer;
     NODES[0].pressure = answer * 2; //p1 = 2p3
 
