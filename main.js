@@ -145,7 +145,7 @@ function calculateAllPressure() {
 
 var ASSET_MANAGER = new AssetManager();
 
-//ASSET_MANAGER.queueDownload("./img/physarum.jpg");
+ASSET_MANAGER.queueDownload("./img/physarum.jpg");
 
 ASSET_MANAGER.downloadAll(function () {
     var canvas = document.getElementById('gameWorld');
