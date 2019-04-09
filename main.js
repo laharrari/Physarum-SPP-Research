@@ -7,62 +7,9 @@ var EDGES = [];
 var NODES = [];
 var NODE_RELATIONS = new Map();
 
-function Animation(spriteSheet, startX, startY, frameWidth, frameHeight, frameDuration, frames, loop, reverse) {
-    this.spriteSheet = spriteSheet;
-    this.startX = startX;
-    this.startY = startY;
-    this.frameWidth = frameWidth;
-    this.frameDuration = frameDuration;
-    this.frameHeight = frameHeight;
-    this.frames = frames;
-    this.totalTime = frameDuration * frames;
-    this.elapsedTime = 0;
-    this.loop = loop;
-    this.reverse = reverse;
-}
-
-Animation.prototype.drawFrame = function (tick, ctx, x, y, scaleBy) {
-    var scaleBy = scaleBy || 1;
-    this.elapsedTime += tick;
-    if (this.loop) {
-        if (this.isDone()) {
-            this.elapsedTime = 0;
-        }
-    } else if (this.isDone()) {
-        return;
-    }
-    var index = this.reverse ? this.frames - this.currentFrame() - 1 : this.currentFrame();
-    var vindex = 0;
-    if ((index + 1) * this.frameWidth + this.startX > this.spriteSheet.width) {
-        index -= Math.floor((this.spriteSheet.width - this.startX) / this.frameWidth);
-        vindex++;
-    }
-    while ((index + 1) * this.frameWidth > this.spriteSheet.width) {
-        index -= Math.floor(this.spriteSheet.width / this.frameWidth);
-        vindex++;
-    }
-
-    var locX = x;
-    var locY = y;
-    var offset = vindex === 0 ? this.startX : 0;
-    ctx.drawImage(this.spriteSheet,
-        index * this.frameWidth + offset, vindex * this.frameHeight + this.startY,  // source from sheet
-        this.frameWidth, this.frameHeight,
-        locX, locY,
-        this.frameWidth * scaleBy,
-        this.frameHeight * scaleBy);
-}
-
-Animation.prototype.currentFrame = function () {
-    return Math.floor(this.elapsedTime / this.frameDuration);
-}
-
-Animation.prototype.isDone = function () {
-    return (this.elapsedTime >= this.totalTime);
-}
-
 function Simulation() {
-    this.iterationCount = 0;
+    this.iterationCount = 1;
+    this.stopSimulation = false;
 }
 
 Simulation.prototype.draw = function () {
@@ -72,22 +19,34 @@ Simulation.prototype.draw = function () {
 }
 
 Simulation.prototype.update = function () {
-    
+    if (!this.stopSimulation) {
+        this.nextIteration();
+    }
 }
 
 /**
  * Next iteration in finding the shortest path.
  */
 Simulation.prototype.nextIteration = function () {
+    console.log("Iteration: " + this.iterationCount);
     calculateAllPressure();
     for (let i = 0; i < EDGES.length; i++) {
-        EDGES[i].calculateFlux();
+        var edge = EDGES[i];
+        edge.calculateFlux();
+        edge.calculateConductivity();
+        console.log("Q" + edge.startNode.nodeLabel + edge.endNode.nodeLabel + ": " + edge.flux);
+        console.log("D" + edge.startNode.nodeLabel + edge.endNode.nodeLabel + ": " + edge.conductivity);
+        //condition to stop simulation: flux of one of the path converges to 0
+        if (edge.conductivity < 0.00001 || edge.flux < 0.00001) {
+            this.stopSimulation = true;
+        }
     }
-    for (let j = 0; j < EDGES.length; j++) {
-        EDGES[j].calculateConductivity();
+    // do not update last iteration count when condition to stop is met
+    if (this.stopSimulation) {
+        return;
     }
     this.iterationCount++;
-    console.log("------------------------");
+    console.log("");
 }
 
 /**
@@ -102,9 +61,14 @@ function Node(theNodeLabel, theIsFoodSource) {
     this.isFoodSource = theIsFoodSource;
 }
 
-
-// Edge to handle the flow between nodes.
-// Represented as a cylindrical tube.
+/**
+ * Edge to handle the flow between nodes. Represented as a cyldrinical tube.
+ * 
+ * @param {*} conductivity the conductivity of the edge
+ * @param {*} length the length of the edge
+ * @param {*} startNode the starting node
+ * @param {*} endNode the ending node
+ */
 function Edge(conductivity, length, startNode, endNode) {
     this.conductivity = conductivity; // D variable in the paper, the thickness of the tube.
     this.length = length; // L variable in the paper, the length of the tube.
@@ -117,23 +81,26 @@ function Edge(conductivity, length, startNode, endNode) {
     this.updateNodeRelations(this.endNode, this.startNode);
 }
 
-// Method to calculate flux between two nodes, the Q variable in the paper.
+/**
+ * Method to calculate flux between two nodes, the Q variable in the paper.
+ */
 Edge.prototype.calculateFlux = function () {
     this.flux = (this.conductivity * (this.startNode.pressure - this.endNode.pressure)) / this.length;
-    console.log("Q" + this.startNode.nodeLabel + this.endNode.nodeLabel + ": " + this.flux);
 }
 
-// Method to calculate conductivity of an edge.
+/**
+ * Method to calculate conductivity of an edge.
+ */
 Edge.prototype.calculateConductivity = function () {
     // Calculate the rate of change in conductivity.
     var rateOfChange = Math.abs(this.flux) - this.conductivity;
     // Update conductivity.
     this.conductivity += rateOfChange;
-
-    console.log("D" + this.startNode.nodeLabel + this.endNode.nodeLabel + ": " + this.conductivity);
 }
 
-// Method to relate nodes via edges.
+/**
+ * Method to relate nodes via edges.
+ */
 Edge.prototype.updateNodeRelations = function (i, j) {
     // Variable to remember previous values of a key in the map NODE_RELATIONS.
     var mapVals = [];
@@ -178,7 +145,7 @@ function calculateAllPressure() {
 
 var ASSET_MANAGER = new AssetManager();
 
-ASSET_MANAGER.queueDownload("./img/physarum.jpg");
+//ASSET_MANAGER.queueDownload("./img/physarum.jpg");
 
 ASSET_MANAGER.downloadAll(function () {
     var canvas = document.getElementById('gameWorld');
@@ -188,7 +155,7 @@ ASSET_MANAGER.downloadAll(function () {
     GAME_ENGINE.start();
     GAME_ENGINE.addEntity(SIMULATION);
 
-    //creating all node objects
+    // Creating all node objects
     var n1 = new Node(1, true);
     var n2 = new Node(2, true);
     var n3 = new Node(3, false);
@@ -199,7 +166,7 @@ ASSET_MANAGER.downloadAll(function () {
     NODES[2] = n3;
     NODES[3] = n4;
 
-    //creating all edge objects
+    // Creating all edge objects
     EDGES[0] = new Edge(1, 1, n1, n3);
     EDGES[1] = new Edge(1, 2, n1, n4);
     EDGES[2] = new Edge(1, 1, n3, n2);
