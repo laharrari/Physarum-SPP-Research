@@ -37,7 +37,7 @@ Simulation.prototype.nextIteration = function () {
         console.log("Q" + edge.startNode.nodeLabel + edge.endNode.nodeLabel + ": " + edge.flux);
         console.log("D" + edge.startNode.nodeLabel + edge.endNode.nodeLabel + ": " + edge.conductivity);
         //condition to stop simulation: flux of one of the path converges to 0
-        if (edge.conductivity < 0.00001 || edge.flux < 0.00001) {
+        if (edge.conductivity < 0.0001 || edge.flux < 0.0001) {
             this.stopSimulation = true;
         }
     }
@@ -145,7 +145,7 @@ function calculateAllPressure() {
 
 var ASSET_MANAGER = new AssetManager();
 
-//ASSET_MANAGER.queueDownload("./img/physarum.jpg");
+ASSET_MANAGER.queueDownload("./img/physarum.jpg");
 
 ASSET_MANAGER.downloadAll(function () {
     var canvas = document.getElementById('gameWorld');
@@ -167,7 +167,7 @@ ASSET_MANAGER.downloadAll(function () {
     NODES[3] = n4;
 
     // Creating all edge objects
-    EDGES[0] = new Edge(1, 1, n1, n3);
+    EDGES[0] = new Edge(1, 5, n1, n3);
     EDGES[1] = new Edge(1, 2, n1, n4);
     EDGES[2] = new Edge(1, 1, n3, n2);
     EDGES[3] = new Edge(1, 2, n4, n2);
