@@ -1,7 +1,3 @@
-// Code provided by Dr. Chris Marriott
-
-
-
 var SiteMap = function (params, sitelist) {
     this.params = params;
     this.thresholds = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
@@ -35,13 +31,5 @@ var SiteMap = function (params, sitelist) {
             this.adjacencymatrix[i][j] = distance(this.sitelist[i], this.sitelist[j]) > this.params.reach ? 0 : 5 * distance(this.sitelist[i], this.sitelist[j]);
             this.adjacencymatrix[j][i] = distance(this.sitelist[i], this.sitelist[j]) > this.params.reach ? 0 : 5 * distance(this.sitelist[i], this.sitelist[j]);
         }
-    }
-}
-
-SiteMap.prototype.reset = function () {
-    for (var i = 0; i < this.params.numsites; i++) {
-        this.sitelist[i].totalsex = 0;
-        this.sitelist[i].totalasex = 0;
-        this.sitelist[i].totalvisits = 0;
     }
 }
