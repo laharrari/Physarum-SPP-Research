@@ -117,6 +117,7 @@ Edge.prototype.updateNodeRelations = function (i, j) {
 /**
  * Calculate pressure for all nodes.
  * HARDCODING FOR 4 NODES FOR NOW
+ * CURRENTLY ONLY WORKS IF D AND L FOR THE TOP ARE THE SAME AND D AND L FOR THE BOTTOM ARE THE SAME
  * 
  * @param {*} theNodes list of all the nodes in the system
  */
