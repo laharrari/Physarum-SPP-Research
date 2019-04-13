@@ -168,8 +168,8 @@ ASSET_MANAGER.downloadAll(function () {
     NODES[3] = n4;
 
     // Creating all edge objects
-    EDGES[0] = new Edge(2, 3, n1, n3);
-    EDGES[1] = new Edge(1, 5, n1, n4);
-    EDGES[2] = new Edge(2, 3, n3, n2);
-    EDGES[3] = new Edge(1, 5, n4, n2);
+    EDGES[0] = new Edge(1, 1, n1, n3);
+    EDGES[1] = new Edge(1, 2, n1, n4);
+    EDGES[2] = new Edge(1, 1, n3, n2);
+    EDGES[3] = new Edge(1, 2, n4, n2);
 });
