@@ -1,51 +1,62 @@
-// creating sitemap of nodes
-var SiteMap = function (params, sitelist) {
-    this.params = params;
-    this.sitelist = [];
+// creating NodeMap of nodes
+var NodeMap = function (nodelist) {
+    this.numsites = 4;
+    this.reach = 0.5;
+    this.nodelist = [];
     this.adjacencymatrix = [];
-    for (var i = 0; i < this.params.numsites; i++) {
+    for (var i = 0; i < this.numsites; i++) {
         this.adjacencymatrix.push([]);
         var row = this.adjacencymatrix[i];
-        for (var j = 0; j < this.params.numsites; j++) {
+        for (var j = 0; j < this.numsites; j++) {
             row.push(0);
             vrow.push(0);
         }
     }
 
-    // replace with adding nodes to sitelist
-    for (var i = 0; i < this.params.numsites; i++) {
+    // replace with adding nodes to nodelist
+    for (var i = 0; i < this.numsites; i++) {
         // var type = Math.floor(Math.random() * 2) == 0 ? "FISH" : "NUTS";
-        // var reward = sitelist ? sitelist[i].reward : this.params.rewardmin + Math.floor(Math.random() * (this.params.rewardmax - this.params.rewardmin + 1));
-        // var x = sitelist ? sitelist[i].x : Math.random();
-        // var y = sitelist ? sitelist[i].y : Math.random();
-        // this.sitelist.push(new GatheringSite(this.params.permsize, reward, this.params.yield, type, i, x, y));
+        // var reward = nodelist ? nodelist[i].reward : this.params.rewardmin + Math.floor(Math.random() * (this.params.rewardmax - this.params.rewardmin + 1));
+        // var x = nodelist ? nodelist[i].x : Math.random();
+        // var y = nodelist ? nodelist[i].y : Math.random();
+        // this.nodelist.push(new GatheringSite(this.params.permsize, reward, this.params.yield, type, i, x, y));
 
         // code to make nodes and edges and store them in necessary data structures.
         // gen nodes first
         // then gen edges
+
+        var x = nodelist ? nodelist[i].x : Math.random();
+        var y = nodelist ? nodelist[i].y : Math.random();
+
+        var foodSource = false;
+        if (i === 0 || i === this.numsites - 1) {
+            foodSource = true;
+        }
+
+        this.nodelist.push(new Node(x, y, i, foodSource));
     }
 
-    // populating adjacency matrix
-    for (var i = 0; i < this.params.numsites; i++) {
-        for (var j = i + 1; j < this.params.numsites; j++) {
-            this.adjacencymatrix[i][j] = distance(this.sitelist[i], this.sitelist[j]) > this.params.reach ? 0 : 5 * distance(this.sitelist[i], this.sitelist[j]);
-            this.adjacencymatrix[j][i] = distance(this.sitelist[i], this.sitelist[j]) > this.params.reach ? 0 : 5 * distance(this.sitelist[i], this.sitelist[j]);
+    // populating adjacency matrix, for edges?
+    for (var i = 0; i < this.numsites; i++) {
+        for (var j = i + 1; j < this.numsites; j++) {
+            this.adjacencymatrix[i][j] = distance(this.nodelist[i], this.nodelist[j]) > this.reach ? 0 : 5 * distance(this.nodelist[i], this.nodelist[j]);
+            this.adjacencymatrix[j][i] = distance(this.nodelist[i], this.nodelist[j]) > this.reach ? 0 : 5 * distance(this.nodelist[i], this.nodelist[j]);
         }
     }
 }
 
 // drawing
-SiteMap.prototype.drawSiteMap = function() {
+NodeMap.prototype.drawNodeMap = function() {
     ctx.beginPath();
     ctx.strokeStyle = "Black";
     //ctx.rect(x, y, w, h);
     //ctx.stroke();
     ctx.lineWidth = 0.5;
-    for (var i = 0; i < this.map.sitelist.length; i++) {
-        for (var j = 0; j < this.map.sitelist.length; j++) {
+    for (var i = 0; i < this.map.nodelist.length; i++) {
+        for (var j = 0; j < this.map.nodelist.length; j++) {
             if (this.map.adjacencymatrix[i][j] !== 0) {
-                var site1 = this.map.sitelist[i];
-                var site2 = this.map.sitelist[j];
+                var site1 = this.map.nodelist[i];
+                var site2 = this.map.nodelist[j];
                 ctx.beginPath();
                 ctx.moveTo(w * site1.x + x, h * site1.y + y);
                 ctx.lineTo(w * site2.x + x, h * site2.y + y);
@@ -56,14 +67,14 @@ SiteMap.prototype.drawSiteMap = function() {
     ctx.lineWidth = 1.0;
 
     var sites = [];
-    for (var i = 0; i < this.map.sitelist.length; i++) sites.push(0);
+    for (var i = 0; i < this.map.nodelist.length; i++) sites.push(0);
 
     for (var i = 0; i < this.p.agents.length; i++) {
         sites[this.p.agents[i].site]++;
     }
 
-    for (var i = 0; i < this.map.sitelist.length; i++) {
-        var site = this.map.sitelist[i];
+    for (var i = 0; i < this.map.nodelist.length; i++) {
+        var site = this.map.nodelist[i];
         ctx.beginPath();
         var rad = Math.max(2, Math.min(2 * (1 + sites[i]), 50));
         ctx.arc(w * site.x + x, h * site.y + y, rad, 0, 2 * Math.PI, false);
