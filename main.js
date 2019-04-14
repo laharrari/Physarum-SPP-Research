@@ -56,6 +56,8 @@ Simulation.prototype.nextIteration = function () {
  * @param {*} theIsFoodSource boolean for whether the node is a food source or not
  */
 function Node(theNodeLabel, theIsFoodSource) {
+    this.x = x;
+    this.y = y;
     this.pressure = 0;
     this.nodeLabel = theNodeLabel;
     this.isFoodSource = theIsFoodSource;
@@ -168,7 +170,7 @@ ASSET_MANAGER.downloadAll(function () {
     NODES[3] = n4;
 
     // Creating all edge objects
-    EDGES[0] = new Edge(1, 1, n1, n3);
+    EDGES[0] = new Edge(1, 5, n1, n3);
     EDGES[1] = new Edge(1, 2, n1, n4);
     EDGES[2] = new Edge(1, 1, n3, n2);
     EDGES[3] = new Edge(1, 2, n4, n2);
