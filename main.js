@@ -56,6 +56,8 @@ Simulation.prototype.nextIteration = function () {
  * @param {*} theIsFoodSource boolean for whether the node is a food source or not
  */
 function Node(theNodeLabel, theIsFoodSource) {
+    this.x = x;
+    this.y = y;
     this.pressure = 0;
     this.nodeLabel = theNodeLabel;
     this.isFoodSource = theIsFoodSource;

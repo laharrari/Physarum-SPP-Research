@@ -1,8 +1,8 @@
+// creating sitemap of nodes
 var SiteMap = function (params, sitelist) {
     this.params = params;
     this.sitelist = [];
     this.adjacencymatrix = [];
-    this.visited = [];
     for (var i = 0; i < this.params.numsites; i++) {
         this.adjacencymatrix.push([]);
         var row = this.adjacencymatrix[i];
@@ -12,15 +12,20 @@ var SiteMap = function (params, sitelist) {
         }
     }
 
-
+    // replace with adding nodes to sitelist
     for (var i = 0; i < this.params.numsites; i++) {
-        var type = Math.floor(Math.random() * 2) == 0 ? "FISH" : "NUTS";
-        var reward = sitelist ? sitelist[i].reward : this.params.rewardmin + Math.floor(Math.random() * (this.params.rewardmax - this.params.rewardmin + 1));
-        var x = sitelist ? sitelist[i].x : Math.random();
-        var y = sitelist ? sitelist[i].y : Math.random();
-        this.sitelist.push(new GatheringSite(this.params.permsize, reward, this.params.yield, type, i, x, y));
+        // var type = Math.floor(Math.random() * 2) == 0 ? "FISH" : "NUTS";
+        // var reward = sitelist ? sitelist[i].reward : this.params.rewardmin + Math.floor(Math.random() * (this.params.rewardmax - this.params.rewardmin + 1));
+        // var x = sitelist ? sitelist[i].x : Math.random();
+        // var y = sitelist ? sitelist[i].y : Math.random();
+        // this.sitelist.push(new GatheringSite(this.params.permsize, reward, this.params.yield, type, i, x, y));
+
+        // code to make nodes and edges and store them in necessary data structures.
+        // gen nodes first
+        // then gen edges
     }
 
+    // populating adjacency matrix
     for (var i = 0; i < this.params.numsites; i++) {
         for (var j = i + 1; j < this.params.numsites; j++) {
             this.adjacencymatrix[i][j] = distance(this.sitelist[i], this.sitelist[j]) > this.params.reach ? 0 : 5 * distance(this.sitelist[i], this.sitelist[j]);
@@ -29,6 +34,7 @@ var SiteMap = function (params, sitelist) {
     }
 }
 
+// drawing
 SiteMap.prototype.drawSiteMap = function() {
     ctx.beginPath();
     ctx.strokeStyle = "Black";
