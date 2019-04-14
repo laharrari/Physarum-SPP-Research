@@ -58,6 +58,8 @@ Simulation.prototype.nextIteration = function () {
  */
 function Node(theNodeLabel, theIsFoodSource) {
     this.pressure = (theNodeLabel === 2) ? 0 : 1;
+    this.x = x;
+    this.y = y;
     this.nodeLabel = theNodeLabel;
     this.isFoodSource = theIsFoodSource;
 }
