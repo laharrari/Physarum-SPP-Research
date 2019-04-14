@@ -6,6 +6,7 @@ var SIMULATION = new Simulation();
 var EDGES = [];
 var NODES = [];
 var NODE_RELATIONS = new Map();
+var EDGE_RELATIONS = new Map();
 
 function Simulation() {
     this.iterationCount = 1;
@@ -56,7 +57,7 @@ Simulation.prototype.nextIteration = function () {
  * @param {*} theIsFoodSource boolean for whether the node is a food source or not
  */
 function Node(theNodeLabel, theIsFoodSource) {
-    this.pressure = 0;
+    this.pressure = (theNodeLabel === 2) ? 0 : 1;
     this.nodeLabel = theNodeLabel;
     this.isFoodSource = theIsFoodSource;
 }
@@ -122,26 +123,134 @@ Edge.prototype.updateNodeRelations = function (i, j) {
  * @param {*} theNodes list of all the nodes in the system
  */
 function calculateAllPressure() {
-    //pressure for sink node = 0
-    NODES[1].pressure = 0;
-
-    var edge1 = EDGES[2]; //M32
-    var x1 = algebra.parse(edge1.conductivity + "/" + edge1.length + " * p3");// D32/L32(p3 - p2)
-
-    var edge2 = EDGES[3]; // M42
-    var x2 = algebra.parse(edge2.conductivity + "/" + edge2.length + " * p3");// D42/L42(p4 - p2)
-
-    var summation = algebra.parse(x1 + "+" + x2);// D32/L32(p3 - p2) + D42/L42(p4 - p2)
-
-    var eq = new Equation(summation, algebra.parse("1"));// D32/L32(p3 - p2) + D42/L42(p4 - p2) = 1
-    var answer = eq.solveFor("p3"); //solve for p3, p3 = p4
-    NODES[2].pressure = answer;
-    NODES[3].pressure = answer;
-    NODES[0].pressure = answer * 2; //p1 = 2p3
-
+    //holds augmented matrix for pressure 
+    var gauss = [];
+    for (let i = 0; i < NODES.length; i++) {
+        var currentNode = NODES[i];
+        //get all edges with the current node
+        var connectingEdgeArray = EDGE_RELATIONS.get(currentNode.nodeLabel);
+        //holds equation created from each node
+        var tempGauss = [];
+        for (let j = 0; j < connectingEdgeArray.length; j++) {
+            var edge = connectingEdgeArray[j];
+            var nodeI, nodeJ;
+            //current node is always j set to j when doing creating equation
+            if (currentNode.nodeLabel === edge.startNode.nodeLabel) {
+                nodeI = edge.endNode;
+                nodeJ = edge.startNode;
+            } else {
+                nodeI = edge.startNode;
+                nodeJ = edge.endNode;
+            }
+            //to prevent -0, don't think this matters at all
+            if (nodeJ.nodeLabel != 2) {
+                nodeJ.pressure *= -1;
+            }
+            console.log("node i: " + nodeI.nodeLabel + " ,node pressure I: " + nodeI.pressure);
+            console.log("node j: " + nodeJ.nodeLabel + " ,node pressure J: " + nodeJ.pressure);
+            //creates left hand side of equation
+            tempGauss.push(edge.conductivity / edge.length * (nodeI.pressure));
+            tempGauss.push(edge.conductivity / edge.length * (nodeJ.pressure));
+        }
+        console.log(" ");   
+        //adds the right side of augmented matrix
+        if (currentNode.nodeLabel === 2) {
+            tempGauss.push(1);
+        } else if (currentNode.nodeLabel === 1) {
+            tempGauss.push(-1);
+        } else {
+            tempGauss.push(0);
+        }
+        gauss.push(tempGauss);
+    }
+    console.log(gauss);
+    var answer = GaussianElimination(gauss);
+    console.log(answer);
     for (let i = 0; i < NODES.length; i++) {
         console.log("p" + NODES[i].nodeLabel + ": " + NODES[i].pressure);
     }
+}
+
+/**
+ * Adds an edge to the system and updates the edge relations array.
+ * 
+ * @param {*} theConductivity conductivity of edge
+ * @param {*} theLength length of edge
+ * @param {*} theStartNode start node of the adge
+ * @param {*} theEndNode end node of the edge
+ */
+function addEdge(theConductivity, theLength, theStartNode, theEndNode) {
+    var newEdge = new Edge(theConductivity, theLength, theStartNode, theEndNode);
+    EDGES.push(newEdge);
+
+    // Variable to remember previous values of a key in the map NODE_RELATIONS.
+    var startMapVals = [];
+    var endMapVals = [];
+    // If key already exists grab previous values of the key.
+    if (EDGE_RELATIONS.has(theStartNode.nodeLabel)) {
+        startMapVals = EDGE_RELATIONS.get(theStartNode.nodeLabel);
+    }
+    if (EDGE_RELATIONS.has(theEndNode.nodeLabel)) {
+        endMapVals = EDGE_RELATIONS.get(theEndNode.nodeLabel);
+    }
+    // Push the new label into startMapVals.
+    startMapVals.push(newEdge);
+    // Update NODE_RELATIONS key for start node.
+    EDGE_RELATIONS.set(theStartNode.nodeLabel, startMapVals);
+
+    // Push the new label into endMapVals.
+    endMapVals.push(newEdge);
+    // Update EDGE_RELATIONS key for the end node.
+    EDGE_RELATIONS.set(theEndNode.nodeLabel, endMapVals);
+}
+
+
+//Temporarily in main
+/** Solve a linear system of equations given by a n&times;n matrix
+    with a result vector n&times;1. */
+function GaussianElimination(A) {
+    var n = A.length;
+    console.log(A);
+    for (var i = 0; i < n; i++) {
+        // Search for maximum in this column
+        var maxEl = Math.abs(A[i][i]);
+        var maxRow = i;
+        for (var k = i + 1; k < n; k++) {
+            if (Math.abs(A[k][i]) > maxEl) {
+                maxEl = Math.abs(A[k][i]);
+                maxRow = k;
+            }
+        }
+
+        // Swap maximum row with current row (column by column)
+        for (var k = i; k < n + 1; k++) {
+            var tmp = A[maxRow][k];
+            A[maxRow][k] = A[i][k];
+            A[i][k] = tmp;
+        }
+
+        // Make all rows below this one 0 in current column
+        for (k = i + 1; k < n; k++) {
+            var c = -A[k][i] / A[i][i];
+            for (var j = i; j < n + 1; j++) {
+                if (i == j) {
+                    A[k][j] = 0;
+                } else {
+                    A[k][j] += c * A[i][j];
+                }
+            }
+        }
+    }
+
+    // Solve equation Ax=b for an upper triangular matrix A
+    var x = new Array(n);
+    for (var i = n - 1; i > -1; i--) {
+        x[i] = A[i][n] / A[i][i]; //PROBLEM HERE: A[i][i] can be 0
+        for (var k = i - 1; k > -1; k--) {
+            A[k][n] -= A[k][i] * x[i];
+        }
+    }
+    return x;
 }
 
 var ASSET_MANAGER = new AssetManager();
@@ -168,8 +277,8 @@ ASSET_MANAGER.downloadAll(function () {
     NODES[3] = n4;
 
     // Creating all edge objects
-    EDGES[0] = new Edge(1, 1, n1, n3);
-    EDGES[1] = new Edge(1, 2, n1, n4);
-    EDGES[2] = new Edge(1, 1, n3, n2);
-    EDGES[3] = new Edge(1, 2, n4, n2);
+    addEdge(1, 1, n1, n3);
+    addEdge(1, 2, n1, n4);
+    addEdge(1, 1, n3, n2);
+    addEdge(1, 2, n4, n2);
 });
