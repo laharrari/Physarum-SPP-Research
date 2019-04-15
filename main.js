@@ -7,6 +7,7 @@ var EDGES = [];
 var NODES = [];
 var NODE_RELATIONS = new Map();
 var EDGE_RELATIONS = new Map();
+var NODE_MAP = new NodeMap();
 
 function Simulation() {
     this.iterationCount = 1;
@@ -207,7 +208,6 @@ function addEdge(theConductivity, theLength, theStartNode, theEndNode) {
     EDGE_RELATIONS.set(theEndNode.nodeLabel, endMapVals);
 }
 
-
 //Temporarily in main
 /** Solve a linear system of equations given by a n&times;n matrix
     with a result vector n&times;1. */
@@ -288,4 +288,6 @@ ASSET_MANAGER.downloadAll(function () {
     addEdge(1, 2, n1, n4);
     addEdge(1, 1, n3, n2);
     addEdge(1, 2, n4, n2);
+
+    NODE_MAP.drawNodeMap();
 });
