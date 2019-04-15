@@ -135,7 +135,6 @@ function calculateAllPressure() {
         var connectingEdgeArray = EDGE_RELATIONS.get(currentNode.nodeLabel);
         //holds equation created from each node
         var tempGauss = [];
-
         for (let x = 0; x < NODES.length; x++) {
             tempGauss[x] = 0;
         }
@@ -143,7 +142,7 @@ function calculateAllPressure() {
         for (let j = 0; j < connectingEdgeArray.length; j++) {
             var edge = connectingEdgeArray[j];
             var nodeI, nodeJ;
-            //current node is always j set to j when doing creating equation
+            //current node is always set to j when creating equation
             if (currentNode.nodeLabel === edge.startNode.nodeLabel) {
                 nodeI = edge.endNode;
                 nodeJ = edge.startNode;
@@ -151,13 +150,18 @@ function calculateAllPressure() {
                 nodeI = edge.startNode;
                 nodeJ = edge.endNode;
             }
-            console.log("node i: " + nodeI.nodeLabel + ", node pressure I: " + nodeI.pressure);
-            console.log("node j: " + nodeJ.nodeLabel + ", node pressure J: " + nodeJ.pressure);
+            // pressure variables, p2 always = 0, every other node = 1
+            var pi = pj = 1;
+            if (nodeI.nodeLabel === 2) {
+                pi = 0;
+            } 
+            if (nodeJ.nodeLabel === 2) {
+                pj = 0;
+            }
             //creates left hand side of equation
-            tempGauss[nodeI.nodeLabel - 1] += (edge.conductivity / edge.length * (nodeI.pressure));
-            tempGauss[nodeJ.nodeLabel - 1] += (edge.conductivity / edge.length * -(nodeJ.pressure));
+            tempGauss[nodeI.nodeLabel - 1] += (edge.conductivity / edge.length * (pi));
+            tempGauss[nodeJ.nodeLabel - 1] += (edge.conductivity / edge.length * -(pj));
         }
-        console.log("");
         //adds the right side of augmented matrix
         if (currentNode.nodeLabel === 2) {
             tempGauss.push(1);
@@ -168,9 +172,11 @@ function calculateAllPressure() {
         }
         gauss.push(tempGauss);
     }
-    console.log(gauss);
     var answer = GaussianElimination(gauss);
-    console.log(answer);
+    //updates pressure for all nodes
+    for (let y = 0; y < NODES.length; y++) {
+        NODES[y].pressure = answer[y];
+    }
     for (let i = 0; i < NODES.length; i++) {
         console.log("p" + NODES[i].nodeLabel + ": " + NODES[i].pressure);
     }
@@ -214,7 +220,6 @@ function addEdge(theConductivity, theLength, theStartNode, theEndNode) {
     with a result vector n&times;1. */
 function GaussianElimination(A) {
     var n = A.length;
-    console.log(A);
     for (var i = 0; i < n; i++) {
         if (A[i][i] != 0) {
             // Search for maximum in this column
@@ -256,6 +261,8 @@ function GaussianElimination(A) {
             for (var k = i - 1; k > -1; k--) {
                 A[k][n] -= A[k][i] * x[i];
             }
+        }  else {
+            x[i] = 0;
         }
     }
     return x;
