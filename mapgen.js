@@ -1,6 +1,6 @@
 // Code provided by Dr. Chris Marriott.
 
-
+var GAME_ENGINE = new GameEngine();
 
 // creating NodeMap of nodes
 function NodeMap() {
@@ -36,22 +36,24 @@ function NodeMap() {
         this.nodelist.push(new Node(x, y, i, foodSource));
     }
 
-    // populating adjacency matrix, for edges?
+    // populating adjacency matrix for edges
     for (var i = 0; i < this.numsites; i++) {
         for (var j = i + 1; j < this.numsites; j++) {
             this.adjacencymatrix[i][j] = distance(this.nodelist[i], this.nodelist[j]) > this.reach ? 0 : 5 * distance(this.nodelist[i], this.nodelist[j]);
             this.adjacencymatrix[j][i] = distance(this.nodelist[i], this.nodelist[j]) > this.reach ? 0 : 5 * distance(this.nodelist[i], this.nodelist[j]);
         }
     }
+
+    console.table(this.adjacencymatrix);
 }
 
 // drawing
 NodeMap.prototype.drawNodeMap = function() {
     var x = 10;
     var y = 20;
-    var w = 500;
-    var h = 500;
-    
+    var w = 350;
+    var h = 350;
+
     GAME_ENGINE.ctx.beginPath();
     GAME_ENGINE.ctx.strokeStyle = "Black";
     //GAME_ENGINE.ctx.rect(x, y, w, h);

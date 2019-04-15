@@ -1,7 +1,6 @@
 var Fraction = algebra.Fraction;
 var Expression = algebra.Expression;
 var Equation = algebra.Equation;
-var GAME_ENGINE = new GameEngine();
 var SIMULATION = new Simulation();
 var EDGES = [];
 var NODES = [];
@@ -18,6 +17,8 @@ Simulation.prototype.draw = function () {
     GAME_ENGINE.ctx.font = "20px Arial";
     GAME_ENGINE.ctx.fillStyle = "black";
     GAME_ENGINE.ctx.fillText("Iteration: " + this.iterationCount, 0, 20);
+
+    NODE_MAP.drawNodeMap();
 }
 
 Simulation.prototype.update = function () {
@@ -288,6 +289,4 @@ ASSET_MANAGER.downloadAll(function () {
     addEdge(1, 2, n1, n4);
     addEdge(1, 1, n3, n2);
     addEdge(1, 2, n4, n2);
-
-    NODE_MAP.drawNodeMap();
 });
