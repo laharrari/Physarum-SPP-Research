@@ -1,12 +1,12 @@
 var Fraction = algebra.Fraction;
 var Expression = algebra.Expression;
 var Equation = algebra.Equation;
-var GAME_ENGINE = new GameEngine();
 var SIMULATION = new Simulation();
 var EDGES = [];
 var NODES = [];
 var NODE_RELATIONS = new Map();
 var EDGE_RELATIONS = new Map();
+var NODE_MAP = new NodeMap();
 
 function Simulation() {
     this.iterationCount = 1;
@@ -17,6 +17,8 @@ Simulation.prototype.draw = function () {
     GAME_ENGINE.ctx.font = "20px Arial";
     GAME_ENGINE.ctx.fillStyle = "black";
     GAME_ENGINE.ctx.fillText("Iteration: " + this.iterationCount, 0, 20);
+
+    NODE_MAP.drawNodeMap();
 }
 
 Simulation.prototype.update = function () {
@@ -206,7 +208,6 @@ function addEdge(theConductivity, theLength, theStartNode, theEndNode) {
     // Update EDGE_RELATIONS key for the end node.
     EDGE_RELATIONS.set(theEndNode.nodeLabel, endMapVals);
 }
-
 
 //Temporarily in main
 /** Solve a linear system of equations given by a n&times;n matrix
