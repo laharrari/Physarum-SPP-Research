@@ -9,10 +9,12 @@ var EDGE_RELATIONS = new Map();
 // creating NodeMap of nodes
 function NodeMap() {
     this.numsites = 4;
-    this.reach = 0.5;
+    this.reach = 1;
     this.nodelist = [];
+    this.edgelist = [];
     this.adjacencymatrix = [];
     this.visited = [];
+
     for (var i = 0; i < this.numsites; i++) {
         this.adjacencymatrix.push([]);
         this.visited.push([]);
@@ -24,31 +26,36 @@ function NodeMap() {
         }
     }
 
-    // replace with adding nodes to nodelist
+    // creating random nodes
     for (var i = 0; i < this.numsites; i++) {
         // calculating a random x and y to position the node
         var x = Math.random() * 1;
         var y = Math.random() * 1;
-        console.log("x: " + x);
-        console.log("y: " + y);
         // determining if the node is a food source or not
         var foodSource = false;
-        if (i === 0 || i === this.numsites - 1) {
+        if (i === 0 || i === 1) {
             foodSource = true;
         }
 
         this.nodelist.push(new Node(x, y, i, foodSource));
     }
+    console.table(this.nodelist);
 
     // populating adjacency matrix for edges
     for (var i = 0; i < this.numsites; i++) {
         for (var j = i + 1; j < this.numsites; j++) {
-            this.adjacencymatrix[i][j] = distance(this.nodelist[i], this.nodelist[j]) > this.reach ? 0 : 5 * distance(this.nodelist[i], this.nodelist[j]);
-            this.adjacencymatrix[j][i] = distance(this.nodelist[i], this.nodelist[j]) > this.reach ? 0 : 5 * distance(this.nodelist[i], this.nodelist[j]);
+            var nodeDist = distance(this.nodelist[i], this.nodelist[j]);
+            if (nodeDist !== 0) {
+                this.adjacencymatrix[i][j] = 1;
+                var conductivity = (Math.random() * 1).toFixed(1);
+                console.log("Random Conductivity: " + conductivity);
+                this.edgelist.push(new Edge(conductivity, nodeDist, this.nodelist[i], this.nodelist[j]));
+            }
         }
     }
 
     console.table(this.adjacencymatrix);
+    console.table(this.edgelist);
 }
 
 // drawing
@@ -71,6 +78,7 @@ NodeMap.prototype.drawNodeMap = function() {
                 GAME_ENGINE.ctx.beginPath();
                 GAME_ENGINE.ctx.moveTo(w * site1.x + x, h * site1.y + y);
                 GAME_ENGINE.ctx.lineTo(w * site2.x + x, h * site2.y + y);
+                GAME_ENGINE.ctx.lineWidth = this.edgelist[i].conductivity * 5;
                 GAME_ENGINE.ctx.stroke();
             }
         }
@@ -98,8 +106,12 @@ NodeMap.prototype.drawNodeMap = function() {
         GAME_ENGINE.ctx.fill();
         GAME_ENGINE.ctx.strokeStyle = "Black";
         GAME_ENGINE.ctx.stroke();
-    }
 
+        GAME_ENGINE.ctx.font = "20px Arial";
+        GAME_ENGINE.ctx.fillStyle = "Black";
+        GAME_ENGINE.ctx.fillText(i + 1, site.x * 400, site.y * 400);
+    }
+    
     GAME_ENGINE.ctx.font = "18px Arial";
     GAME_ENGINE.ctx.fillStyle = "black";
 
