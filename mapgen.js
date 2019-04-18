@@ -11,6 +11,7 @@ function NodeMap() {
     this.numsites = 4;
     this.reach = 1;
     this.nodelist = [];
+    this.edgelist = [];
     this.adjacencymatrix = [];
     this.visited = [];
 
@@ -43,12 +44,18 @@ function NodeMap() {
     // populating adjacency matrix for edges
     for (var i = 0; i < this.numsites; i++) {
         for (var j = i + 1; j < this.numsites; j++) {
-            this.adjacencymatrix[i][j] = distance(this.nodelist[i], this.nodelist[j]) > this.reach ? 0 : 5 * distance(this.nodelist[i], this.nodelist[j]);
-            this.adjacencymatrix[j][i] = distance(this.nodelist[i], this.nodelist[j]) > this.reach ? 0 : 5 * distance(this.nodelist[i], this.nodelist[j]);
+            var nodeDist = distance(this.nodelist[i], this.nodelist[j]);
+            if (nodeDist !== 0) {
+                this.adjacencymatrix[i][j] = 1;
+                var conductivity = (Math.random() * 1).toFixed(1);
+                console.log("Random Conductivity: " + conductivity);
+                this.edgelist.push(new Edge(conductivity, nodeDist, this.nodelist[i], this.nodelist[j]));
+            }
         }
     }
 
     console.table(this.adjacencymatrix);
+    console.table(this.edgelist);
 }
 
 // drawing
@@ -71,6 +78,7 @@ NodeMap.prototype.drawNodeMap = function() {
                 GAME_ENGINE.ctx.beginPath();
                 GAME_ENGINE.ctx.moveTo(w * site1.x + x, h * site1.y + y);
                 GAME_ENGINE.ctx.lineTo(w * site2.x + x, h * site2.y + y);
+                GAME_ENGINE.ctx.lineWidth = this.edgelist[i].conductivity * 5;
                 GAME_ENGINE.ctx.stroke();
             }
         }
