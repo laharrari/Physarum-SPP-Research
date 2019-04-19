@@ -3,60 +3,89 @@
 var GAME_ENGINE = new GameEngine();
 var EDGES = [];
 var NODES = [];
+//enum for the node types
+const NODE_TYPES = {
+    SOURCE: 'source',
+    SINK: 'sink',
+    OTHER: 'other'
+}
 
 // creating NodeMap of nodes
 function NodeMap() {
     this.numsites = 4;
-    this.reach = 1;
+    this.reach = 0.5;
 
     // creating random nodes
     for (var i = 0; i < this.numsites; i++) {
         // calculating a random x and y to position the node
         var x = Math.random() * 1;
         var y = Math.random() * 1;
-        // determining if the node is a food source or not
-        var foodSource = false;
-        if (i === 0 || i === 1) {
-            foodSource = true;
+        var type;
+        if (i === 0) {
+            type = NODE_TYPES.SOURCE;
+        } else if (i === 1) {
+            type = NODE_TYPES.SINK;
+        } else type = NODE_TYPES.OTHER;
+
+        NODES.push(new Node(x, y, i, type));
+    }
+
+    //Ensures n1 is far most left node, and n2 is far most right node
+    for (let i = 0; i < this.numsites; i++) {
+        //makes far most left node the source
+        if (NODES[i].x < NODES[0].x) {
+            var tempNode = NODES[i];
+            NODES[i].nodeType = NODE_TYPES.SOURCE;
+            NODES[0].nodeType = NODE_TYPES.OTHER;
+            NODES[i] = NODES[0];
+            NODES[0] = tempNode;
         }
 
-        NODES.push(new Node(x, y, i, foodSource));
+        //makes far most right node the source
+        if (NODES[i].x > NODES[1].x) {
+            var tempNode = NODES[i];
+            NODES[i].nodeType = NODE_TYPES.SINK;
+            NODES[1].nodeType = NODE_TYPES.OTHER;
+            NODES[i] = NODES[1];
+            NODES[1] = tempNode;
+        }
     }
+
+    console.log("nodes");
     console.table(NODES);
 
     // // populating adjacency matrix for edges
     // for (var i = 0; i < this.numsites; i++) {
     //     for (var j = i + 1; j < this.numsites; j++) {
     //         var nodeDist = distance(NODES[i], NODES[j]);
-    //         if (nodeDist !== 0) {
-    //             this.adjacencymatrix[i][j] = 1;
+    //         if (nodeDist >= this.reach) {
     //             var conductivity = (Math.random() * 1).toFixed(1);
     //             console.log("Random Conductivity: " + conductivity);
     //             EDGES.push(new Edge(conductivity, nodeDist, NODES[i], NODES[j]));
     //         }
     //     }
     // }
-    
-        // Creating all node objects
-        var n1 = new Node(0.2, 0.5, 1, true);
-        var n2 = new Node(0.8, 0.5, 2, true);
-        var n3 = new Node(0.5, 0.2, 3, false);
-        var n4 = new Node(0.5, 0.8, 4, false);
-    
-        NODES[0] = n1;
-        NODES[1] = n2;
-        NODES[2] = n3;
-        NODES[3] = n4;
-    
-        // Creating all edge objects
-        addEdge(1, 1, n1, n3);
-        addEdge(1, 2, n1, n4);
-        addEdge(1, 1, n3, n2);
-        addEdge(1, 2, n4, n2);
+
+    // Creating all node objects
+    var n1 = new Node(0.2, 0.5, 1, true);
+    var n2 = new Node(0.8, 0.5, 2, true);
+    var n3 = new Node(0.5, 0.2, 3, false);
+    var n4 = new Node(0.5, 0.8, 4, false);
+
+    NODES[0] = n1;
+    NODES[1] = n2;
+    NODES[2] = n3;
+    NODES[3] = n4;
+
+    // Creating all edge objects
+    addEdge(1, 1, n1, n3);
+    addEdge(1, 2, n1, n4);
+    addEdge(1, 1, n3, n2);
+    addEdge(1, 2, n4, n2);
 }
 
 // drawing
-NodeMap.prototype.drawNodeMap = function() {
+NodeMap.prototype.drawNodeMap = function () {
     var x = 10;
     var y = 20;
     var w = 350;
@@ -104,7 +133,7 @@ NodeMap.prototype.drawNodeMap = function() {
         GAME_ENGINE.ctx.fillStyle = "Black";
         GAME_ENGINE.ctx.fillText(i + 1, node.x * 400, node.y * 400);
     }
-    
+
     GAME_ENGINE.ctx.font = "18px Arial";
     GAME_ENGINE.ctx.fillStyle = "black";
 
@@ -115,15 +144,14 @@ NodeMap.prototype.drawNodeMap = function() {
  * Food source nodes and other nodes in the system.
  * 
  * @param {*} theNodeLabel the label number for the node
- * @param {*} theIsFoodSource boolean for whether the node is a food source or not
  */
-function Node(x, y, theNodeLabel, theIsFoodSource) {
+function Node(x, y, theNodeLabel, theNodeType) {
     this.pressure = (theNodeLabel === 2) ? 0 : 1;
     this.x = x;
     this.y = y;
     this.nodeLabel = theNodeLabel;
-    this.isFoodSource = theIsFoodSource;
     this.edgeRelations = [];
+    this.nodeType = theNodeType;
 }
 
 /**
@@ -194,7 +222,7 @@ function calculateAllPressure() {
             var pi = pj = 1;
             if (nodeI.nodeLabel === 2) {
                 pi = 0;
-            } 
+            }
             if (nodeJ.nodeLabel === 2) {
                 pj = 0;
             }
