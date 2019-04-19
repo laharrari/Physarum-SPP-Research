@@ -3,8 +3,6 @@
 var GAME_ENGINE = new GameEngine();
 var EDGES = [];
 var NODES = [];
-var NODE_RELATIONS = new Map();
-var EDGE_RELATIONS = new Map();
 
 // creating NodeMap of nodes
 function NodeMap() {
@@ -125,6 +123,7 @@ function Node(x, y, theNodeLabel, theIsFoodSource) {
     this.y = y;
     this.nodeLabel = theNodeLabel;
     this.isFoodSource = theIsFoodSource;
+    this.edgeRelations = [];
 }
 
 /**
@@ -141,10 +140,6 @@ function Edge(conductivity, length, startNode, endNode) {
     this.flux = 0; // Q variable in the paper, the flux of the tube between two nodes.
     this.startNode = startNode; // A starting node.
     this.endNode = endNode; // An ending node.
-
-    // Explicitly declaring the two nodes as sharing an edge, having a relation.
-    this.updateNodeRelations(this.startNode, this.endNode);
-    this.updateNodeRelations(this.endNode, this.startNode);
 }
 
 /**
@@ -165,22 +160,6 @@ Edge.prototype.calculateConductivity = function () {
 }
 
 /**
- * Method to relate nodes via edges.
- */
-Edge.prototype.updateNodeRelations = function (i, j) {
-    // Variable to remember previous values of a key in the map NODE_RELATIONS.
-    var mapVals = [];
-    // If key already exists grab previous values of the key.
-    if (NODE_RELATIONS.has(i.nodeLabel)) {
-        mapVals = [NODE_RELATIONS.get(i.nodeLabel)];
-    }
-    // Push the new label into mapVals.
-    mapVals.push(j.nodeLabel);
-    // Update NODE_RELATIONS key.
-    NODE_RELATIONS.set(i.nodeLabel, mapVals);
-}
-
-/**
  * Calculate pressure for all nodes.
  * HARDCODING FOR 4 NODES FOR NOW
  * CURRENTLY ONLY WORKS IF D AND L FOR THE TOP ARE THE SAME AND D AND L FOR THE BOTTOM ARE THE SAME
@@ -193,7 +172,7 @@ function calculateAllPressure() {
     for (let i = 0; i < NODES.length; i++) {
         var currentNode = NODES[i];
         //get all edges with the current node
-        var connectingEdgeArray = EDGE_RELATIONS.get(currentNode.nodeLabel);
+        var connectingEdgeArray = currentNode.edgeRelations;
         //holds equation created from each node
         var tempGauss = [];
         for (let x = 0; x < NODES.length; x++) {
@@ -254,24 +233,6 @@ function calculateAllPressure() {
 function addEdge(theConductivity, theLength, theStartNode, theEndNode) {
     var newEdge = new Edge(theConductivity, theLength, theStartNode, theEndNode);
     EDGES.push(newEdge);
-
-    // Variable to remember previous values of a key in the map NODE_RELATIONS.
-    var startMapVals = [];
-    var endMapVals = [];
-    // If key already exists grab previous values of the key.
-    if (EDGE_RELATIONS.has(theStartNode.nodeLabel)) {
-        startMapVals = EDGE_RELATIONS.get(theStartNode.nodeLabel);
-    }
-    if (EDGE_RELATIONS.has(theEndNode.nodeLabel)) {
-        endMapVals = EDGE_RELATIONS.get(theEndNode.nodeLabel);
-    }
-    // Push the new label into startMapVals.
-    startMapVals.push(newEdge);
-    // Update NODE_RELATIONS key for start node.
-    EDGE_RELATIONS.set(theStartNode.nodeLabel, startMapVals);
-
-    // Push the new label into endMapVals.
-    endMapVals.push(newEdge);
-    // Update EDGE_RELATIONS key for the end node.
-    EDGE_RELATIONS.set(theEndNode.nodeLabel, endMapVals);
+    theStartNode.edgeRelations.push(newEdge);
+    theEndNode.edgeRelations.push(newEdge);
 }
