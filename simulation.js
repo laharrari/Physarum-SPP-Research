@@ -1,6 +1,8 @@
 function Simulation() {
     this.iterationCount = 1;
     this.stopSimulation = false;
+    this.counter = 0;
+    this.maxCounter = 0.3;
 }
 
 Simulation.prototype.draw = function () {
@@ -13,8 +15,14 @@ Simulation.prototype.draw = function () {
 
 Simulation.prototype.update = function () {
     if (!this.stopSimulation) {
-        this.nextIteration();
+        if (this.counter > this.maxCounter) {
+            this.nextIteration();
+            this.counter = 0;
+        } else {
+            this.counter += GAME_ENGINE.clockTick;
+        }
     }
+   
 }
 
 /**

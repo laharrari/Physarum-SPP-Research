@@ -10,21 +10,6 @@ var EDGE_RELATIONS = new Map();
 function NodeMap() {
     this.numsites = 4;
     this.reach = 1;
-    this.nodelist = [];
-    this.edgelist = [];
-    this.adjacencymatrix = [];
-    this.visited = [];
-
-    for (var i = 0; i < this.numsites; i++) {
-        this.adjacencymatrix.push([]);
-        this.visited.push([]);
-        var row = this.adjacencymatrix[i];
-        var vrow = this.visited[i];
-        for (var j = 0; j < this.numsites; j++) {
-            row.push(0);
-            vrow.push(0);
-        }
-    }
 
     // creating random nodes
     for (var i = 0; i < this.numsites; i++) {
@@ -37,25 +22,39 @@ function NodeMap() {
             foodSource = true;
         }
 
-        this.nodelist.push(new Node(x, y, i, foodSource));
+        NODES.push(new Node(x, y, i, foodSource));
     }
-    console.table(this.nodelist);
+    console.table(NODES);
 
-    // populating adjacency matrix for edges
-    for (var i = 0; i < this.numsites; i++) {
-        for (var j = i + 1; j < this.numsites; j++) {
-            var nodeDist = distance(this.nodelist[i], this.nodelist[j]);
-            if (nodeDist !== 0) {
-                this.adjacencymatrix[i][j] = 1;
-                var conductivity = (Math.random() * 1).toFixed(1);
-                console.log("Random Conductivity: " + conductivity);
-                this.edgelist.push(new Edge(conductivity, nodeDist, this.nodelist[i], this.nodelist[j]));
-            }
-        }
-    }
-
-    console.table(this.adjacencymatrix);
-    console.table(this.edgelist);
+    // // populating adjacency matrix for edges
+    // for (var i = 0; i < this.numsites; i++) {
+    //     for (var j = i + 1; j < this.numsites; j++) {
+    //         var nodeDist = distance(NODES[i], NODES[j]);
+    //         if (nodeDist !== 0) {
+    //             this.adjacencymatrix[i][j] = 1;
+    //             var conductivity = (Math.random() * 1).toFixed(1);
+    //             console.log("Random Conductivity: " + conductivity);
+    //             EDGES.push(new Edge(conductivity, nodeDist, NODES[i], NODES[j]));
+    //         }
+    //     }
+    // }
+    
+        // Creating all node objects
+        var n1 = new Node(0.2, 0.5, 1, true);
+        var n2 = new Node(0.8, 0.5, 2, true);
+        var n3 = new Node(0.5, 0.2, 3, false);
+        var n4 = new Node(0.5, 0.8, 4, false);
+    
+        NODES[0] = n1;
+        NODES[1] = n2;
+        NODES[2] = n3;
+        NODES[3] = n4;
+    
+        // Creating all edge objects
+        addEdge(1, 1, n1, n3);
+        addEdge(1, 2, n1, n4);
+        addEdge(1, 1, n3, n2);
+        addEdge(1, 2, n4, n2);
 }
 
 // drawing
@@ -69,31 +68,27 @@ NodeMap.prototype.drawNodeMap = function() {
     GAME_ENGINE.ctx.strokeStyle = "Black";
     //GAME_ENGINE.ctx.rect(x, y, w, h);
     //GAME_ENGINE.ctx.stroke();
-    GAME_ENGINE.ctx.lineWidth = 0.5;
-    for (var i = 0; i < this.nodelist.length; i++) {
-        for (var j = 0; j < this.nodelist.length; j++) {
-            if (this.adjacencymatrix[i][j] !== 0) {
-                var site1 = this.nodelist[i];
-                var site2 = this.nodelist[j];
-                GAME_ENGINE.ctx.beginPath();
-                GAME_ENGINE.ctx.moveTo(w * site1.x + x, h * site1.y + y);
-                GAME_ENGINE.ctx.lineTo(w * site2.x + x, h * site2.y + y);
-                GAME_ENGINE.ctx.lineWidth = this.edgelist[i].conductivity * 5;
-                GAME_ENGINE.ctx.stroke();
-            }
-        }
+    //GAME_ENGINE.ctx.lineWidth = 0.5;
+    for (var i = 0; i < EDGES.length; i++) {
+        var startNode = EDGES[i].startNode;
+        var endNode = EDGES[i].endNode;
+        GAME_ENGINE.ctx.beginPath();
+        GAME_ENGINE.ctx.moveTo(w * startNode.x + x, h * startNode.y + y);
+        GAME_ENGINE.ctx.lineTo(w * endNode.x + x, h * endNode.y + y);
+        GAME_ENGINE.ctx.lineWidth = EDGES[i].conductivity * 5;
+        GAME_ENGINE.ctx.stroke();
     }
     GAME_ENGINE.ctx.lineWidth = 1.0;
 
     var sites = [];
-    for (var i = 0; i < this.nodelist.length; i++) sites.push(0);
+    for (var i = 0; i < NODES.length; i++) sites.push(0);
 
-    for (var i = 0; i < this.nodelist.length; i++) {
-        var site = this.nodelist[i];
+    for (var i = 0; i < NODES.length; i++) {
+        var node = NODES[i];
         GAME_ENGINE.ctx.beginPath();
         var rad = Math.max(2, Math.min(2 * (1 + sites[i]), 50));
-        GAME_ENGINE.ctx.arc(w * site.x + x, h * site.y + y, rad, 0, 2 * Math.PI, false);
-        var dist = Math.sqrt(site.x * site.x + site.y * site.y) / Math.sqrt(2);
+        GAME_ENGINE.ctx.arc(w * node.x + x, h * node.y + y, rad, 0, 2 * Math.PI, false);
+        var dist = Math.sqrt(node.x * node.x + node.y * node.y) / Math.sqrt(2);
         var red = Math.floor((dist - 0.5) * 2 * 255);
         var green = Math.floor((dist - 0.5) * 2 * 255);
         var blue = Math.floor(255);
@@ -109,7 +104,7 @@ NodeMap.prototype.drawNodeMap = function() {
 
         GAME_ENGINE.ctx.font = "20px Arial";
         GAME_ENGINE.ctx.fillStyle = "Black";
-        GAME_ENGINE.ctx.fillText(i + 1, site.x * 400, site.y * 400);
+        GAME_ENGINE.ctx.fillText(i + 1, node.x * 400, node.y * 400);
     }
     
     GAME_ENGINE.ctx.font = "18px Arial";
