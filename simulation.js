@@ -31,8 +31,6 @@ Simulation.prototype.update = function () {
 Simulation.prototype.nextIteration = function () {
     console.table(NODES);
     console.table(EDGES);
-    console.table(NODE_RELATIONS);
-    console.table(EDGE_RELATIONS);
     console.log("Iteration: " + this.iterationCount);
     calculateAllPressure();
     for (let i = 0; i < EDGES.length; i++) {
