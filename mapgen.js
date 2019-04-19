@@ -51,9 +51,6 @@ function NodeMap() {
         }
     }
 
-    console.log("nodes");
-    console.table(NODES);
-
     // // populating adjacency matrix for edges
     // for (var i = 0; i < this.numsites; i++) {
     //     for (var j = i + 1; j < this.numsites; j++) {
@@ -82,6 +79,12 @@ function NodeMap() {
     addEdge(1, 2, n1, n4);
     addEdge(1, 1, n3, n2);
     addEdge(1, 2, n4, n2);
+    console.log("Iteration: " + SIMULATION.iterationCount);
+    for (let i = 0; i < EDGES.length; i++) {
+        var edge = EDGES[i];
+        console.log("D" + edge.startNode.nodeLabel + edge.endNode.nodeLabel + ": " + edge.conductivity);
+        console.log("L" + edge.startNode.nodeLabel + edge.endNode.nodeLabel + ": " + edge.length);
+    }
 }
 
 // drawing
@@ -157,7 +160,7 @@ NodeMap.prototype.drawNodeMap = function () {
  * @param {*} theNodeLabel the label number for the node
  */
 function Node(x, y, theNodeLabel, theNodeType) {
-    this.pressure = (theNodeLabel === 2) ? 0 : 1;
+    this.pressure = 0;
     this.x = x;
     this.y = y;
     this.nodeLabel = theNodeLabel;
