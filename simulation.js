@@ -1,5 +1,5 @@
 function Simulation() {
-    this.iterationCount = 1;
+    this.iterationCount = 0;
     this.stopSimulation = false;
     this.counter = 0;
     this.maxCounter = 0.3;
@@ -9,7 +9,6 @@ Simulation.prototype.draw = function () {
     GAME_ENGINE.ctx.font = "20px Arial";
     GAME_ENGINE.ctx.fillStyle = "black";
     GAME_ENGINE.ctx.fillText("Iteration: " + this.iterationCount, 0, 20);
-
     NODE_MAP.drawNodeMap();
 }
 
@@ -29,7 +28,10 @@ Simulation.prototype.update = function () {
  * Next iteration in finding the shortest path.
  */
 Simulation.prototype.nextIteration = function () {
+    this.iterationCount++;
+    console.log("Nodes:");
     console.table(NODES);
+    console.log("Edges:");
     console.table(EDGES);
     console.log("Iteration: " + this.iterationCount);
     calculateAllPressure();
@@ -48,6 +50,5 @@ Simulation.prototype.nextIteration = function () {
     if (this.stopSimulation) {
         return;
     }
-    this.iterationCount++;
     console.log("");
 }
