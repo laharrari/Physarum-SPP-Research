@@ -17,3 +17,12 @@ canvas {
     height: 500px;
     position: relative;
 }
+
+.label {
+    display: inline;
+}
+
+#state {
+    display: inline;
+    color: red;
+}

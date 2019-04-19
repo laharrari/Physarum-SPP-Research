@@ -34,6 +34,7 @@ function GameEngine() {
     this.ctx = null;
     this.surfaceWidth = null;
     this.surfaceHeight = null;
+    this.pause = true;
 }
 
 GameEngine.prototype.init = function (ctx) {
@@ -56,9 +57,22 @@ GameEngine.prototype.startInput = function () {
     var that = this;
     //REMOVE LATER: KEY LISTENERS FOR STEPPING TO NEXT ITERATION
     this.ctx.canvas.addEventListener("keydown", function (e) {
-        if (e.code === "KeyS" && !SIMULATION.stopSimulation) {
-            SIMULATION.nextIteration();
-        } 
+        if (!SIMULATION.stopSimulation) {
+            if (e.code === "KeyS") {
+                SIMULATION.nextIteration();
+            } else if (e.code === "KeyP") {
+                var state = document.getElementById("state");
+                if (that.pause) {
+                    that.pause = false;
+                    state.innerHTML = "Running"
+                    state.style.color = "lightgreen";
+                } else {
+                    that.pause = true;
+                    state.innerHTML = "Paused";
+                    state.style.color = "red";
+                }
+            }
+        }
     });
 }
 

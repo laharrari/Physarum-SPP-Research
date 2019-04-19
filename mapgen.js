@@ -92,7 +92,6 @@ NodeMap.prototype.drawNodeMap = function () {
     var h = 350;
 
     GAME_ENGINE.ctx.beginPath();
-    GAME_ENGINE.ctx.strokeStyle = "Black";
     //GAME_ENGINE.ctx.rect(x, y, w, h);
     //GAME_ENGINE.ctx.stroke();
     //GAME_ENGINE.ctx.lineWidth = 0.5;
@@ -103,6 +102,17 @@ NodeMap.prototype.drawNodeMap = function () {
         GAME_ENGINE.ctx.moveTo(w * startNode.x + x, h * startNode.y + y);
         GAME_ENGINE.ctx.lineTo(w * endNode.x + x, h * endNode.y + y);
         GAME_ENGINE.ctx.lineWidth = EDGES[i].conductivity * 7.5;
+
+        var red = Math.floor((EDGES[i].flux) * 2 * 255);
+        var green = Math.floor((EDGES[i].flux) * 2 * 255);
+        var blue = Math.floor(255);
+        if (red < 0) {
+            red = 0;
+            green = 0;
+            blue = Math.floor(dist * 2 * 255);
+        }
+        GAME_ENGINE.ctx.strokeStyle = "rgb(" + red + "," + green + "," + blue + ")";
+        
         GAME_ENGINE.ctx.stroke();
     }
     GAME_ENGINE.ctx.lineWidth = 1.0;
@@ -121,9 +131,10 @@ NodeMap.prototype.drawNodeMap = function () {
         var blue = Math.floor(255);
         if (red < 0) {
             red = 0;
-            gree = 0;
+            green = 0;
             blue = Math.floor(dist * 2 * 255);
         }
+        
         GAME_ENGINE.ctx.fillStyle = "rgb(" + red + "," + green + "," + blue + ")";
         GAME_ENGINE.ctx.fill();
         GAME_ENGINE.ctx.strokeStyle = "Black";
