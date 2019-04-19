@@ -16,7 +16,7 @@ Simulation.prototype.draw = function () {
 Simulation.prototype.update = function () {
     if (!this.stopSimulation) {
         if (this.counter > this.maxCounter) {
-            this.nextIteration();
+            //this.nextIteration();
             this.counter = 0;
         } else {
             this.counter += GAME_ENGINE.clockTick;
