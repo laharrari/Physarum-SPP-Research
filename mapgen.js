@@ -102,7 +102,7 @@ NodeMap.prototype.drawNodeMap = function () {
         GAME_ENGINE.ctx.beginPath();
         GAME_ENGINE.ctx.moveTo(w * startNode.x + x, h * startNode.y + y);
         GAME_ENGINE.ctx.lineTo(w * endNode.x + x, h * endNode.y + y);
-        GAME_ENGINE.ctx.lineWidth = EDGES[i].conductivity * 5;
+        GAME_ENGINE.ctx.lineWidth = EDGES[i].conductivity * 7.5;
         GAME_ENGINE.ctx.stroke();
     }
     GAME_ENGINE.ctx.lineWidth = 1.0;
@@ -113,7 +113,7 @@ NodeMap.prototype.drawNodeMap = function () {
     for (var i = 0; i < NODES.length; i++) {
         var node = NODES[i];
         GAME_ENGINE.ctx.beginPath();
-        var rad = Math.max(2, Math.min(2 * (1 + sites[i]), 50));
+        var rad = Math.max(node.pressure * 7.5, Math.min(2 * (1 + sites[i]), 50));
         GAME_ENGINE.ctx.arc(w * node.x + x, h * node.y + y, rad, 0, 2 * Math.PI, false);
         var dist = Math.sqrt(node.x * node.x + node.y * node.y) / Math.sqrt(2);
         var red = Math.floor((dist - 0.5) * 2 * 255);
@@ -131,7 +131,7 @@ NodeMap.prototype.drawNodeMap = function () {
 
         GAME_ENGINE.ctx.font = "20px Arial";
         GAME_ENGINE.ctx.fillStyle = "Black";
-        GAME_ENGINE.ctx.fillText(i + 1, node.x * 400, node.y * 400);
+        GAME_ENGINE.ctx.fillText(i + 1, node.x * 450 - 50, node.y * 450 - 25); // DONT FORGET TO FIX THIS *************************************
     }
 
     GAME_ENGINE.ctx.font = "18px Arial";

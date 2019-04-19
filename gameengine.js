@@ -56,7 +56,7 @@ GameEngine.prototype.startInput = function () {
     var that = this;
     //REMOVE LATER: KEY LISTENERS FOR STEPPING TO NEXT ITERATION
     this.ctx.canvas.addEventListener("keydown", function (e) {
-        if (e.code === "KeyS") {
+        if (e.code === "KeyS" && !SIMULATION.stopSimulation) {
             SIMULATION.nextIteration();
         } 
     });

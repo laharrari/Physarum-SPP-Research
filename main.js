@@ -11,5 +11,6 @@ ASSET_MANAGER.downloadAll(function () {
     GAME_ENGINE.start();
     GAME_ENGINE.addEntity(SIMULATION);
 
-        NODE_MAP = new NodeMap();
+    NODE_MAP = new NodeMap();
+    canvas.focus();
 });
