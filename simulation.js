@@ -48,6 +48,9 @@ Simulation.prototype.nextIteration = function () {
     }
     // do not update last iteration count when condition to stop is met
     if (this.stopSimulation) {
+        var state = document.getElementById("state");
+        state.innerHTML = "Stopped";
+        state.style.color = "red";
         return;
     }
     console.log("");

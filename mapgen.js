@@ -14,7 +14,20 @@ const NODE_TYPES = {
 function NodeMap() {
     this.numsites = 4;
     this.reach = 0.5;
+    
+    //this.hardcodedSystem();
+    this.randomSystem();
+    this.findSourceAndSink();
 
+    console.log("Iteration: " + SIMULATION.iterationCount);
+    for (let i = 0; i < EDGES.length; i++) {
+        var edge = EDGES[i];
+        console.log("D" + edge.startNode.nodeLabel + edge.endNode.nodeLabel + ": " + edge.conductivity);
+        console.log("L" + edge.startNode.nodeLabel + edge.endNode.nodeLabel + ": " + edge.length);
+    }
+}
+
+NodeMap.prototype.randomSystem = function () {
     // creating random nodes
     for (var i = 0; i < this.numsites; i++) {
         // calculating a random x and y to position the node
@@ -22,52 +35,34 @@ function NodeMap() {
         var y = Math.random() * 1;
         var type;
         if (i === 0) {
+            console.log("src")
             type = NODE_TYPES.SOURCE;
         } else if (i === 1) {
             type = NODE_TYPES.SINK;
         } else type = NODE_TYPES.OTHER;
 
-        NODES.push(new Node(x, y, i, type));
+        NODES.push(new Node(x, y, i + 1, type));
     }
 
-    //Ensures n1 is far most left node, and n2 is far most right node
-    for (let i = 0; i < this.numsites; i++) {
-        //makes far most left node the source
-        if (NODES[i].x < NODES[0].x) {
-            var tempNode = NODES[i];
-            NODES[i].nodeType = NODE_TYPES.SOURCE;
-            NODES[0].nodeType = NODE_TYPES.OTHER;
-            NODES[i] = NODES[0];
-            NODES[0] = tempNode;
-        }
-
-        //makes far most right node the source
-        if (NODES[i].x > NODES[1].x) {
-            var tempNode = NODES[i];
-            NODES[i].nodeType = NODE_TYPES.SINK;
-            NODES[1].nodeType = NODE_TYPES.OTHER;
-            NODES[i] = NODES[1];
-            NODES[1] = tempNode;
+    // populating adjacency matrix for edges
+    for (var i = 0; i < this.numsites; i++) {
+        for (var j = i + 1; j < this.numsites; j++) {
+            var nodeDist = distance(NODES[i], NODES[j]);
+            if (nodeDist >= this.reach) {
+                var conductivity = (Math.random() * 1) + 0.1;
+                console.log("Random Conductivity: " + conductivity);
+                addEdge(conductivity, nodeDist, NODES[i], NODES[j]);
+            }
         }
     }
+}
 
-    // // populating adjacency matrix for edges
-    // for (var i = 0; i < this.numsites; i++) {
-    //     for (var j = i + 1; j < this.numsites; j++) {
-    //         var nodeDist = distance(NODES[i], NODES[j]);
-    //         if (nodeDist >= this.reach) {
-    //             var conductivity = (Math.random() * 1).toFixed(1);
-    //             console.log("Random Conductivity: " + conductivity);
-    //             EDGES.push(new Edge(conductivity, nodeDist, NODES[i], NODES[j]));
-    //         }
-    //     }
-    // }
-
+NodeMap.prototype.hardcodedSystem = function () {
     // Creating all node objects
-    var n1 = new Node(0.2, 0.5, 1, true);
-    var n2 = new Node(0.8, 0.5, 2, true);
-    var n3 = new Node(0.5, 0.2, 3, false);
-    var n4 = new Node(0.5, 0.8, 4, false);
+    var n1 = new Node(0.2, 0.5, 1, NODE_TYPES.SOURCE);
+    var n2 = new Node(0.8, 0.5, 2, NODE_TYPES.SINK);
+    var n3 = new Node(0.5, 0.2, 3, NODE_TYPES.OTHER);
+    var n4 = new Node(0.5, 0.8, 4, NODE_TYPES.OTHER);
 
     NODES[0] = n1;
     NODES[1] = n2;
@@ -79,11 +74,34 @@ function NodeMap() {
     addEdge(1, 2, n1, n4);
     addEdge(1, 1, n3, n2);
     addEdge(1, 2, n4, n2);
-    console.log("Iteration: " + SIMULATION.iterationCount);
-    for (let i = 0; i < EDGES.length; i++) {
-        var edge = EDGES[i];
-        console.log("D" + edge.startNode.nodeLabel + edge.endNode.nodeLabel + ": " + edge.conductivity);
-        console.log("L" + edge.startNode.nodeLabel + edge.endNode.nodeLabel + ": " + edge.length);
+}
+
+NodeMap.prototype.findSourceAndSink = function () {
+    //Ensures n1 is far most left node, and n2 is far most right node
+    for (let i = 0; i < this.numsites; i++) {
+        //makes far most left node the source
+        if (NODES[i].x < NODES[0].x) {
+            var tempNode = NODES[i];
+            var tempLabel = NODES[i].nodeLabel;
+            NODES[i] = NODES[0];
+            NODES[0] = tempNode;
+            NODES[0].nodeType = NODE_TYPES.SOURCE;
+            NODES[i].nodeType = NODE_TYPES.OTHER;
+            NODES[0].nodeLabel = NODES[i].nodeLabel;
+            NODES[i].nodeLabel = tempLabel;
+        }
+
+        //makes far most right node the source
+        if (NODES[i].x > NODES[1].x) {
+            var tempNode = NODES[i];
+            var tempLabel = NODES[i].nodeLabel;
+            NODES[i] = NODES[1];
+            NODES[1] = tempNode;
+            NODES[1].nodeType = NODE_TYPES.SINK;
+            NODES[i].nodeType = NODE_TYPES.OTHER;
+            NODES[1].nodeLabel = NODES[i].nodeLabel;
+            NODES[i].nodeLabel = tempLabel;
+        }
     }
 }
 
@@ -94,10 +112,9 @@ NodeMap.prototype.drawNodeMap = function () {
     var w = 350;
     var h = 350;
 
+    GAME_ENGINE.ctx.lineWidth = 1.0;
+    //draws and colors all the edges
     GAME_ENGINE.ctx.beginPath();
-    //GAME_ENGINE.ctx.rect(x, y, w, h);
-    //GAME_ENGINE.ctx.stroke();
-    //GAME_ENGINE.ctx.lineWidth = 0.5;
     for (var i = 0; i < EDGES.length; i++) {
         var startNode = EDGES[i].startNode;
         var endNode = EDGES[i].endNode;
@@ -118,11 +135,11 @@ NodeMap.prototype.drawNodeMap = function () {
         
         GAME_ENGINE.ctx.stroke();
     }
-    GAME_ENGINE.ctx.lineWidth = 1.0;
 
     var sites = [];
     for (var i = 0; i < NODES.length; i++) sites.push(0);
 
+    //Draws and colors all the nodes
     for (var i = 0; i < NODES.length; i++) {
         var node = NODES[i];
         GAME_ENGINE.ctx.beginPath();
@@ -150,8 +167,6 @@ NodeMap.prototype.drawNodeMap = function () {
 
     GAME_ENGINE.ctx.font = "18px Arial";
     GAME_ENGINE.ctx.fillStyle = "black";
-
-    var offset = 1.1 * w;
 }
 
 /**
@@ -254,7 +269,9 @@ function calculateAllPressure() {
         }
         gauss.push(tempGauss);
     }
+    console.log(gauss);
     var answer = GaussianElimination(gauss);
+    console.log(answer);
     //updates pressure for all nodes
     for (let y = 0; y < NODES.length; y++) {
         NODES[y].pressure = answer[y];
