@@ -52,9 +52,7 @@ NodeMap.prototype.randomSystem = function () {
             var conductivity = (Math.random() * 1) + 0.1;
             console.log("Random Conductivity: " + conductivity);
             //makes sure start node is never node 2
-            if (NODES[i].nodeLabel === 1 && NODES[j].nodeLabel === 2) {
-                // IDK WHY THIS LIKE THIS
-            } else {
+            if (!(NODES[i].nodeLabel === 1 && NODES[j].nodeLabel === 2)) {
                 if (NODES[i].nodeLabel === 2) {
                     addEdge(1, nodeDist, NODES[j], NODES[i]);
                 } else {
