@@ -15,8 +15,8 @@ function NodeMap() {
     this.numsites = 4;
     this.reach = 1;
     
-    //this.hardcodedSystem();
-    this.randomSystem();
+    this.hardcodedSystem();
+    //this.randomSystem();
 
     console.log("Iteration: " + SIMULATION.iterationCount);
     for (let i = 0; i < EDGES.length; i++) {
@@ -61,6 +61,7 @@ NodeMap.prototype.randomSystem = function () {
             }
         }
     }
+
 }
 
 NodeMap.prototype.hardcodedSystem = function () {
