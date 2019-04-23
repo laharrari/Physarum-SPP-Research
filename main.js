@@ -10,7 +10,12 @@ ASSET_MANAGER.downloadAll(function () {
     GAME_ENGINE.init(ctx);
     GAME_ENGINE.start();
     GAME_ENGINE.addEntity(SIMULATION);
-
+    var speedSlider = document.getElementById("speedSlider");
+    speedSlider.addEventListener("change", function () {
+        tickDelay = maxTickDelay - speedSlider.value;
+        SIMULATION.maxCounter = tickDelay;
+        canvas.focus();
+    }, false);
     NODE_MAP = new NodeMap();
     canvas.focus();
 });
