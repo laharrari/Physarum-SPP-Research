@@ -1,8 +1,12 @@
+/*Delay for simulation update. */
+const maxTickDelay = 1.2;
+var tickDelay = 0.3;
+
 function Simulation() {
     this.iterationCount = 0;
     this.stopSimulation = false;
     this.counter = 0;
-    this.maxCounter = 0.3;
+    this.maxCounter = tickDelay;
 }
 
 Simulation.prototype.draw = function () {
@@ -13,8 +17,8 @@ Simulation.prototype.draw = function () {
 }
 
 Simulation.prototype.update = function () {
-    if (!this.stopSimulation) {
-        if (!GAME_ENGINE.pause && this.counter > this.maxCounter) {
+    if (!this.stopSimulation && !GAME_ENGINE.pause) {
+        if (this.counter > this.maxCounter) {
             this.nextIteration();
             this.counter = 0;
         } else {
