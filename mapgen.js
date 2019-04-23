@@ -17,7 +17,6 @@ function NodeMap() {
     
     //this.hardcodedSystem();
     this.randomSystem();
-    this.findSourceAndSink();
 
     console.log("Iteration: " + SIMULATION.iterationCount);
     for (let i = 0; i < EDGES.length; i++) {
@@ -44,6 +43,8 @@ NodeMap.prototype.randomSystem = function () {
         NODES.push(new Node(x, y, i + 1, type));
     }
 
+    this.findSourceAndSink();
+
     // populating adjacency matrix for edges
     for (var i = 0; i < this.numsites; i++) {
         for (var j = i + 1; j < this.numsites; j++) {
@@ -51,7 +52,11 @@ NodeMap.prototype.randomSystem = function () {
             if (nodeDist >= this.reach) {
                 var conductivity = (Math.random() * 1) + 0.1;
                 console.log("Random Conductivity: " + conductivity);
-                addEdge(conductivity, nodeDist, NODES[i], NODES[j]);
+                if (NODES[i].nodeLabel === 2) {
+                    addEdge(1, nodeDist, NODES[j], NODES[i]);
+                } else {
+                    addEdge(1, nodeDist, NODES[i], NODES[j]);
+                } 
             }
         }
     }
@@ -70,10 +75,10 @@ NodeMap.prototype.hardcodedSystem = function () {
     NODES[3] = n4;
 
     // Creating all edge objects
-    addEdge(1, 1, n1, n3);
-    addEdge(1, 2, n1, n4);
-    addEdge(1, 1, n3, n2);
-    addEdge(1, 2, n4, n2);
+    addEdge(2, 3, n1, n3);
+    addEdge(1, 5, n1, n4);
+    addEdge(2, 3, n3, n2);
+    addEdge(1, 5, n4, n2);
 }
 
 NodeMap.prototype.findSourceAndSink = function () {
@@ -291,6 +296,7 @@ function calculateAllPressure() {
  */
 function addEdge(theConductivity, theLength, theStartNode, theEndNode) {
     var newEdge = new Edge(theConductivity, theLength, theStartNode, theEndNode);
+    console.log(newEdge);
     EDGES.push(newEdge);
     theStartNode.edgeRelations.push(newEdge);
     theEndNode.edgeRelations.push(newEdge);
