@@ -13,7 +13,7 @@ const NODE_TYPES = {
 // creating NodeMap of nodes
 function NodeMap() {
     this.numsites = 4;
-    this.reach = 0.7;
+    this.reach = 1;
     
     this.hardcodedSystem();
     //this.randomSystem();
@@ -49,15 +49,15 @@ NodeMap.prototype.randomSystem = function () {
     for (var i = 0; i < this.numsites; i++) {
         for (var j = i + 1; j < this.numsites; j++) {
             var nodeDist = distance(NODES[i], NODES[j]);
-            if (nodeDist <= this.reach) {
-                var conductivity = (Math.random() * 1) + 0.1;
-                console.log("Random Conductivity: " + conductivity);
-                //makes sure start node is never node 2
+            var conductivity = (Math.random() * 1) + 0.1;
+            console.log("Random Conductivity: " + conductivity);
+            //makes sure start node is never node 2
+            if (!(NODES[i].nodeLabel === 1 && NODES[j].nodeLabel === 2)) {
                 if (NODES[i].nodeLabel === 2) {
                     addEdge(1, nodeDist, NODES[j], NODES[i]);
                 } else {
                     addEdge(1, nodeDist, NODES[i], NODES[j]);
-                } 
+                }
             }
         }
     }
