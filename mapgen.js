@@ -12,17 +12,20 @@ const NODE_TYPES = {
 
 // creating NodeMap of nodes
 function NodeMap() {
-    this.numsites = 4;
-    this.reach = 1;
-    
-    this.hardcodedSystem();
-    //this.randomSystem();
+    this.numsites = 6;
+    this.reach = .1;
 
-    console.log("Iteration: " + SIMULATION.iterationCount);
+    // Defining fields necessary for DFS, checking for islands and correcting
+    this.adjList = new Map();
+
+    // this.hardcodedSystem();
+    this.randomSystem();
+
+    // console.log("Iteration: " + SIMULATION.iterationCount);
     for (let i = 0; i < EDGES.length; i++) {
         var edge = EDGES[i];
-        console.log("D" + edge.startNode.nodeLabel + edge.endNode.nodeLabel + ": " + edge.conductivity);
-        console.log("L" + edge.startNode.nodeLabel + edge.endNode.nodeLabel + ": " + edge.length);
+        // console.log("D" + edge.startNode.nodeLabel + edge.endNode.nodeLabel + ": " + edge.conductivity);
+        // console.log("L" + edge.startNode.nodeLabel + edge.endNode.nodeLabel + ": " + edge.length);
     }
 }
 
@@ -41,6 +44,7 @@ NodeMap.prototype.randomSystem = function () {
         } else type = NODE_TYPES.OTHER;
 
         NODES.push(new Node(x, y, i + 1, type));
+        this.addAdjVertex(i + 1);
     }
 
     this.findSourceAndSink();
@@ -50,19 +54,87 @@ NodeMap.prototype.randomSystem = function () {
         for (var j = i + 1; j < this.numsites; j++) {
             var nodeDist = distance(NODES[i], NODES[j]);
             var conductivity = (Math.random() * 1) + 0.1;
-            console.log("Random Conductivity: " + conductivity);
-            //makes sure start node is never node 2
-            if (!(NODES[i].nodeLabel === 1 && NODES[j].nodeLabel === 2)) {
+            // console.log("Random Conductivity: " + conductivity);
+            if (nodeDist <= this.reach) {
+                var conductivity = (Math.random() * 1) + 0.1;
+                // console.log("Random Conductivity: " + conductivity);
+                // Makes sure start node is never node 2
                 if (NODES[i].nodeLabel === 2) {
                     addEdge(1, nodeDist, NODES[j], NODES[i]);
+                    this.addAdjEdge(NODES[j].nodeLabel, NODES[i].nodeLabel);
                 } else {
                     addEdge(1, nodeDist, NODES[i], NODES[j]);
+                    this.addAdjEdge(NODES[i].nodeLabel, NODES[j].nodeLabel);
                 }
             }
         }
     }
+    
+    // Testing and correcting islands
+    console.log(this.adjList);
 
+    for (var i = 0; i < NODES.length; i++) {
+        this.depthFirstSearch(NODES[i].nodeLabel);
+    }
 }
+
+
+
+// *********************** DFS RELEATED CODE ***********************
+
+// Adding vertexes and edges for a new map that will check for adjacent vertex's
+NodeMap.prototype.addAdjVertex = function(vertex) {
+    this.adjList.set(vertex, []);
+}
+
+NodeMap.prototype.addAdjEdge = function(startVertex, endVertex) {
+    this.adjList.get(startVertex).push(endVertex); 
+    this.adjList.get(endVertex).push(startVertex);
+}
+
+// DFS to check for islands
+NodeMap.prototype.depthFirstSearch = function(startingNode) {
+    var visited = [];
+
+    for (var i = 0; i < this.noOfVertices; i++) {
+        visited[i] = false;
+    }
+
+    this.adjVertexCheck(startingNode, visited);
+    var connectedCount = 0;
+    for (var i = 0; i < visited.length; i++) {
+        if (visited[i]) {
+            connectedCount++;
+        }
+    }
+
+    if (connectedCount < this.numsites) {
+        var conductivity = (Math.random() * 1) + 0.1;
+        var randomNode = Math.floor(Math.random() * this.numsites);
+        while (randomNode === startingNode - 1) {
+            randomNode = Math.floor(Math.random() * this.numsites);
+        }
+        var nodeDist = distance(NODES[startingNode - 1], NODES[randomNode]);
+        addEdge(1, nodeDist, NODES[startingNode - 1], NODES[randomNode]);
+    }
+}
+
+// Recursive function to check adjacent vertex's
+NodeMap.prototype.adjVertexCheck = function(vertex, visited) {
+    visited[vertex] = true;
+
+    var get_neighbours = this.adjList.get(vertex);
+
+    for (var i in get_neighbours) {
+        var get_elem = get_neighbours[i];
+        if (!visited[get_elem]) {
+            this.adjVertexCheck(get_elem, visited);
+        }
+    }
+}
+// *********************** DFS RELEATED CODE ***********************
+
+
 
 NodeMap.prototype.hardcodedSystem = function () {
     // Creating all node objects
@@ -298,7 +370,7 @@ function calculateAllPressure() {
  */
 function addEdge(theConductivity, theLength, theStartNode, theEndNode) {
     var newEdge = new Edge(theConductivity, theLength, theStartNode, theEndNode);
-    console.log(newEdge);
+    // console.log(newEdge);
     EDGES.push(newEdge);
     theStartNode.edgeRelations.push(newEdge);
     theEndNode.edgeRelations.push(newEdge);
