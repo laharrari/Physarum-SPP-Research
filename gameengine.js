@@ -66,7 +66,7 @@ GameEngine.prototype.startInput = function () {
                 if (that.pause) {
                     that.pause = false;
                     state.innerHTML = "Running"
-                    state.style.color = "lightgreen";
+                    state.style.color = "green";
                 } else {
                     that.pause = true;
                     state.innerHTML = "Paused";
