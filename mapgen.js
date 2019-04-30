@@ -11,15 +11,16 @@ const NODE_TYPES = {
 }
 
 // creating NodeMap of nodes
-function NodeMap() {
+function NodeMap(theMapType) {
     this.numsites = 6;
-    this.reach = .1;
-
-    // Defining fields necessary for DFS, checking for islands and correcting
-    this.adjList = new Map();
-
-    // this.hardcodedSystem();
-    this.randomSystem();
+    this.reach = 0.1;
+    if (theMapType === 0) {
+        this.adjList = new Map();
+        this.randomSystem();
+    } else if (theMapType === 1) {
+        this.hardcodedSystem();
+    }
+    console.log("Map Created!");
 
     // console.log("Iteration: " + SIMULATION.iterationCount);
     for (let i = 0; i < EDGES.length; i++) {
@@ -37,7 +38,6 @@ NodeMap.prototype.randomSystem = function () {
         var y = Math.random() * 1;
         var type;
         if (i === 0) {
-            console.log("src")
             type = NODE_TYPES.SOURCE;
         } else if (i === 1) {
             type = NODE_TYPES.SINK;
@@ -46,7 +46,6 @@ NodeMap.prototype.randomSystem = function () {
         NODES.push(new Node(x, y, i + 1, type));
         this.addAdjVertex(i + 1);
     }
-
     this.findSourceAndSink();
 
     // populating adjacency matrix for edges
@@ -115,7 +114,7 @@ NodeMap.prototype.depthFirstSearch = function(startingNode) {
             randomNode = Math.floor(Math.random() * this.numsites);
         }
         var nodeDist = distance(NODES[startingNode - 1], NODES[randomNode]);
-        addEdge(1, nodeDist, NODES[startingNode - 1], NODES[randomNode]);
+        addEdge(conductivity, nodeDist, NODES[startingNode - 1], NODES[randomNode]);
     }
 }
 
@@ -290,7 +289,7 @@ Edge.prototype.calculateFlux = function () {
  */
 Edge.prototype.calculateConductivity = function () {
     // Calculate the rate of change in conductivity.
-    var rateOfChange = Math.abs(this.flux) - this.conductivity;
+    var rateOfChange = Math.abs(this.flux) - params.alpha * this.conductivity;
     // Update conductivity.
     this.conductivity += rateOfChange;
 }

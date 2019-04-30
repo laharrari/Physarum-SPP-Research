@@ -35,6 +35,7 @@ function GameEngine() {
     this.surfaceWidth = null;
     this.surfaceHeight = null;
     this.pause = true;
+    this.reset = true;
 }
 
 GameEngine.prototype.init = function (ctx) {
@@ -57,7 +58,7 @@ GameEngine.prototype.startInput = function () {
     var that = this;
     //REMOVE LATER: KEY LISTENERS FOR STEPPING TO NEXT ITERATION
     this.ctx.canvas.addEventListener("keydown", function (e) {
-        if (!SIMULATION.stopSimulation) {
+        if (!GAME_ENGINE.reset && !SIMULATION.stopSimulation) {
             if (e.code === "KeyS") {
                 SIMULATION.nextIteration();
             } else if (e.code === "KeyP") {
@@ -79,6 +80,14 @@ GameEngine.prototype.startInput = function () {
 GameEngine.prototype.addEntity = function (entity) {
     this.entities.push(entity);
 }
+
+GameEngine.prototype.removeEntities = function () {
+    for (let i = 0; i < GAME_ENGINE.entities.length; i++) {
+        var entity = GAME_ENGINE.entities[i];
+        entity.removeFromWorld = true;
+        GAME_ENGINE.entities.pop();
+    }
+}    
 
 GameEngine.prototype.draw = function () {
     this.ctx.clearRect(0, 0, this.ctx.canvas.width, this.ctx.canvas.height);

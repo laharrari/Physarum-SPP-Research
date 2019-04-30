@@ -10,10 +10,9 @@ function Simulation() {
 }
 
 Simulation.prototype.draw = function () {
-    GAME_ENGINE.ctx.font = "20px Arial";
-    GAME_ENGINE.ctx.fillStyle = "black";
-    GAME_ENGINE.ctx.fillText("Iteration: " + this.iterationCount, 0, 20);
-    NODE_MAP.drawNodeMap();
+    if (NODE_MAP !== undefined) {
+        NODE_MAP.drawNodeMap();
+    }
 }
 
 Simulation.prototype.update = function () {
@@ -46,7 +45,7 @@ Simulation.prototype.nextIteration = function () {
         console.log("Q" + edge.startNode.nodeLabel + edge.endNode.nodeLabel + ": " + edge.flux);
         console.log("D" + edge.startNode.nodeLabel + edge.endNode.nodeLabel + ": " + edge.conductivity);
         //condition to stop simulation: flux of one of the path converges to 0
-        if (edge.conductivity < 0.0001 || edge.flux < 0.0001 || this.iterationCount > 100) {
+        if (edge.conductivity < 0.0001 || this.iterationCount > 100) {
             this.stopSimulation = true;
         }
     }
