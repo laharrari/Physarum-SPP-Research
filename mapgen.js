@@ -11,81 +11,160 @@ const NODE_TYPES = {
 }
 
 // creating NodeMap of nodes
-function NodeMap() {
-    this.numsites = 4;
-    this.reach = 1;
-    
-    this.hardcodedSystem();
-    //this.randomSystem();
+function NodeMap(theMapType) {
+    if (theMapType === 0) {
+        this.adjList = new Map();
+        this.randomSystem();
+    } else if (theMapType === 1) {
+        this.hardcodedSystem();
+    }
+    console.log("Map Created!");
 
-    console.log("Iteration: " + SIMULATION.iterationCount);
+    // console.log("Iteration: " + SIMULATION.iterationCount);
     for (let i = 0; i < EDGES.length; i++) {
         var edge = EDGES[i];
-        console.log("D" + edge.startNode.nodeLabel + edge.endNode.nodeLabel + ": " + edge.conductivity);
-        console.log("L" + edge.startNode.nodeLabel + edge.endNode.nodeLabel + ": " + edge.length);
+        // console.log("D" + edge.startNode.nodeLabel + edge.endNode.nodeLabel + ": " + edge.conductivity);
+        // console.log("L" + edge.startNode.nodeLabel + edge.endNode.nodeLabel + ": " + edge.length);
     }
 }
 
 NodeMap.prototype.randomSystem = function () {
     // creating random nodes
-    for (var i = 0; i < this.numsites; i++) {
+    for (var i = 0; i < params.numsites; i++) {
         // calculating a random x and y to position the node
         var x = Math.random() * 1;
         var y = Math.random() * 1;
         var type;
         if (i === 0) {
-            console.log("src")
             type = NODE_TYPES.SOURCE;
         } else if (i === 1) {
             type = NODE_TYPES.SINK;
         } else type = NODE_TYPES.OTHER;
 
         NODES.push(new Node(x, y, i + 1, type));
+        this.addAdjVertex(i + 1);
     }
-
     this.findSourceAndSink();
 
     // populating adjacency matrix for edges
-    for (var i = 0; i < this.numsites; i++) {
-        for (var j = i + 1; j < this.numsites; j++) {
+    for (var i = 0; i < params.numsites; i++) {
+        for (var j = i + 1; j < params.numsites; j++) {
             var nodeDist = distance(NODES[i], NODES[j]);
             var conductivity = (Math.random() * 1) + 0.1;
-            console.log("Random Conductivity: " + conductivity);
-            //makes sure start node is never node 2
-            if (!(NODES[i].nodeLabel === 1 && NODES[j].nodeLabel === 2)) {
+            // console.log("Random Conductivity: " + conductivity);
+            if (nodeDist <= params.reach) {
+                var conductivity = (Math.random() * 1) + 0.1;
+                // console.log("Random Conductivity: " + conductivity);
+                // Makes sure start node is never node 2
                 if (NODES[i].nodeLabel === 2) {
                     addEdge(1, nodeDist, NODES[j], NODES[i]);
+                    this.addAdjEdge(NODES[j].nodeLabel, NODES[i].nodeLabel);
                 } else {
                     addEdge(1, nodeDist, NODES[i], NODES[j]);
+                    this.addAdjEdge(NODES[i].nodeLabel, NODES[j].nodeLabel);
                 }
             }
         }
     }
 
+    // Testing and correcting islands
+    console.log(this.adjList);
+
+    for (var i = 0; i < NODES.length; i++) {
+        this.depthFirstSearch(NODES[i].nodeLabel);
+    }
 }
 
+
+
+// *********************** DFS RELEATED CODE ***********************
+
+// Adding vertexes and edges for a new map that will check for adjacent vertex's
+NodeMap.prototype.addAdjVertex = function (vertex) {
+    this.adjList.set(vertex, []);
+}
+
+NodeMap.prototype.addAdjEdge = function (startVertex, endVertex) {
+    this.adjList.get(startVertex).push(endVertex);
+    this.adjList.get(endVertex).push(startVertex);
+}
+
+// DFS to check for islands
+NodeMap.prototype.depthFirstSearch = function (startingNode) {
+    var visited = [];
+
+    for (var i = 0; i < this.noOfVertices; i++) {
+        visited[i] = false;
+    }
+
+    this.adjVertexCheck(startingNode, visited);
+    var connectedCount = 0;
+    for (var i = 0; i < visited.length; i++) {
+        if (visited[i]) {
+            connectedCount++;
+        }
+    }
+
+    if (connectedCount < params.numsites) {
+        var conductivity = (Math.random() * 1) + 0.1;
+        var randomNode = Math.floor(Math.random() * params.numsites);
+        while (randomNode === startingNode - 1) {
+            randomNode = Math.floor(Math.random() * params.numsites);
+        }
+        var nodeDist = distance(NODES[startingNode - 1], NODES[randomNode]);
+        addEdge(conductivity, nodeDist, NODES[startingNode - 1], NODES[randomNode]);
+    }
+}
+
+// Recursive function to check adjacent vertex's
+NodeMap.prototype.adjVertexCheck = function (vertex, visited) {
+    visited[vertex] = true;
+
+    var get_neighbours = this.adjList.get(vertex);
+
+    for (var i in get_neighbours) {
+        var get_elem = get_neighbours[i];
+        if (!visited[get_elem]) {
+            this.adjVertexCheck(get_elem, visited);
+        }
+    }
+}
+// *********************** DFS RELEATED CODE ***********************
+
+
+
 NodeMap.prototype.hardcodedSystem = function () {
-    // Creating all node objects
-    var n1 = new Node(0.2, 0.5, 1, NODE_TYPES.SOURCE);
-    var n2 = new Node(0.8, 0.5, 2, NODE_TYPES.SINK);
-    var n3 = new Node(0.5, 0.2, 3, NODE_TYPES.OTHER);
-    var n4 = new Node(0.5, 0.8, 4, NODE_TYPES.OTHER);
+    var dropdownIndex = document.getElementById("hardcoded").selectedIndex;
+     // Creating all node objects
+     var n1 = new Node(0.2, 0.5, 1, NODE_TYPES.SOURCE);
+     var n2 = new Node(0.8, 0.5, 2, NODE_TYPES.SINK);
+     var n3 = new Node(0.5, 0.2, 3, NODE_TYPES.OTHER);
+     var n4 = new Node(0.5, 0.8, 4, NODE_TYPES.OTHER);
 
-    NODES[0] = n1;
-    NODES[1] = n2;
-    NODES[2] = n3;
-    NODES[3] = n4;
-
-    // Creating all edge objects
-    addEdge(2, 3, n1, n3);
-    addEdge(1, 5, n1, n4);
-    addEdge(2, 3, n3, n2);
-    addEdge(1, 5, n4, n2);
+     NODES[0] = n1;
+     NODES[1] = n2;
+     NODES[2] = n3;
+     NODES[3] = n4;
+    if (dropdownIndex > 0) {
+        if (dropdownIndex === 1) {
+            // Creating all edge objects
+            addEdge(2, 3, n1, n3);
+            addEdge(1, 5, n1, n4);
+            addEdge(2, 3, n3, n2);
+            addEdge(1, 5, n4, n2);
+        } else if (dropdownIndex === 2) {
+            // Creating all edge objects
+            addEdge(1, 1, n1, n3);
+            addEdge(1, 2, n1, n4);
+            addEdge(1, 1, n3, n2);
+            addEdge(1, 2, n4, n2);
+        }
+    }
 }
 
 NodeMap.prototype.findSourceAndSink = function () {
     //Ensures n1 is far most left node, and n2 is far most right node
-    for (let i = 0; i < this.numsites; i++) {
+    for (let i = 0; i < params.numsites; i++) {
         //makes far most left node the source
         if (NODES[i].x < NODES[0].x) {
             var tempNode = NODES[i];
@@ -139,7 +218,7 @@ NodeMap.prototype.drawNodeMap = function () {
             blue = Math.floor(dist * 2 * 255);
         }
         GAME_ENGINE.ctx.strokeStyle = "rgb(" + red + "," + green + "," + blue + ")";
-        
+
         GAME_ENGINE.ctx.stroke();
     }
 
@@ -161,7 +240,7 @@ NodeMap.prototype.drawNodeMap = function () {
             green = 0;
             blue = Math.floor(dist * 2 * 255);
         }
-        
+
         GAME_ENGINE.ctx.fillStyle = "rgb(" + red + "," + green + "," + blue + ")";
         GAME_ENGINE.ctx.fill();
         GAME_ENGINE.ctx.strokeStyle = "Black";
@@ -218,7 +297,7 @@ Edge.prototype.calculateFlux = function () {
  */
 Edge.prototype.calculateConductivity = function () {
     // Calculate the rate of change in conductivity.
-    var rateOfChange = Math.abs(this.flux) - this.conductivity;
+    var rateOfChange = Math.abs(this.flux) - params.alpha * this.conductivity;
     // Update conductivity.
     this.conductivity += rateOfChange;
 }
@@ -298,7 +377,7 @@ function calculateAllPressure() {
  */
 function addEdge(theConductivity, theLength, theStartNode, theEndNode) {
     var newEdge = new Edge(theConductivity, theLength, theStartNode, theEndNode);
-    console.log(newEdge);
+    // console.log(newEdge);
     EDGES.push(newEdge);
     theStartNode.edgeRelations.push(newEdge);
     theEndNode.edgeRelations.push(newEdge);
