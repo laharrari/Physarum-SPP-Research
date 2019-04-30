@@ -12,8 +12,6 @@ const NODE_TYPES = {
 
 // creating NodeMap of nodes
 function NodeMap(theMapType) {
-    this.numsites = 6;
-    this.reach = 0.1;
     if (theMapType === 0) {
         this.adjList = new Map();
         this.randomSystem();
@@ -32,7 +30,7 @@ function NodeMap(theMapType) {
 
 NodeMap.prototype.randomSystem = function () {
     // creating random nodes
-    for (var i = 0; i < this.numsites; i++) {
+    for (var i = 0; i < params.numsites; i++) {
         // calculating a random x and y to position the node
         var x = Math.random() * 1;
         var y = Math.random() * 1;
@@ -49,12 +47,12 @@ NodeMap.prototype.randomSystem = function () {
     this.findSourceAndSink();
 
     // populating adjacency matrix for edges
-    for (var i = 0; i < this.numsites; i++) {
-        for (var j = i + 1; j < this.numsites; j++) {
+    for (var i = 0; i < params.numsites; i++) {
+        for (var j = i + 1; j < params.numsites; j++) {
             var nodeDist = distance(NODES[i], NODES[j]);
             var conductivity = (Math.random() * 1) + 0.1;
             // console.log("Random Conductivity: " + conductivity);
-            if (nodeDist <= this.reach) {
+            if (nodeDist <= params.reach) {
                 var conductivity = (Math.random() * 1) + 0.1;
                 // console.log("Random Conductivity: " + conductivity);
                 // Makes sure start node is never node 2
@@ -68,7 +66,7 @@ NodeMap.prototype.randomSystem = function () {
             }
         }
     }
-    
+
     // Testing and correcting islands
     console.log(this.adjList);
 
@@ -82,17 +80,17 @@ NodeMap.prototype.randomSystem = function () {
 // *********************** DFS RELEATED CODE ***********************
 
 // Adding vertexes and edges for a new map that will check for adjacent vertex's
-NodeMap.prototype.addAdjVertex = function(vertex) {
+NodeMap.prototype.addAdjVertex = function (vertex) {
     this.adjList.set(vertex, []);
 }
 
-NodeMap.prototype.addAdjEdge = function(startVertex, endVertex) {
-    this.adjList.get(startVertex).push(endVertex); 
+NodeMap.prototype.addAdjEdge = function (startVertex, endVertex) {
+    this.adjList.get(startVertex).push(endVertex);
     this.adjList.get(endVertex).push(startVertex);
 }
 
 // DFS to check for islands
-NodeMap.prototype.depthFirstSearch = function(startingNode) {
+NodeMap.prototype.depthFirstSearch = function (startingNode) {
     var visited = [];
 
     for (var i = 0; i < this.noOfVertices; i++) {
@@ -107,11 +105,11 @@ NodeMap.prototype.depthFirstSearch = function(startingNode) {
         }
     }
 
-    if (connectedCount < this.numsites) {
+    if (connectedCount < params.numsites) {
         var conductivity = (Math.random() * 1) + 0.1;
-        var randomNode = Math.floor(Math.random() * this.numsites);
+        var randomNode = Math.floor(Math.random() * params.numsites);
         while (randomNode === startingNode - 1) {
-            randomNode = Math.floor(Math.random() * this.numsites);
+            randomNode = Math.floor(Math.random() * params.numsites);
         }
         var nodeDist = distance(NODES[startingNode - 1], NODES[randomNode]);
         addEdge(conductivity, nodeDist, NODES[startingNode - 1], NODES[randomNode]);
@@ -119,7 +117,7 @@ NodeMap.prototype.depthFirstSearch = function(startingNode) {
 }
 
 // Recursive function to check adjacent vertex's
-NodeMap.prototype.adjVertexCheck = function(vertex, visited) {
+NodeMap.prototype.adjVertexCheck = function (vertex, visited) {
     visited[vertex] = true;
 
     var get_neighbours = this.adjList.get(vertex);
@@ -136,27 +134,37 @@ NodeMap.prototype.adjVertexCheck = function(vertex, visited) {
 
 
 NodeMap.prototype.hardcodedSystem = function () {
-    // Creating all node objects
-    var n1 = new Node(0.2, 0.5, 1, NODE_TYPES.SOURCE);
-    var n2 = new Node(0.8, 0.5, 2, NODE_TYPES.SINK);
-    var n3 = new Node(0.5, 0.2, 3, NODE_TYPES.OTHER);
-    var n4 = new Node(0.5, 0.8, 4, NODE_TYPES.OTHER);
+    var dropdownIndex = document.getElementById("hardcoded").selectedIndex;
+     // Creating all node objects
+     var n1 = new Node(0.2, 0.5, 1, NODE_TYPES.SOURCE);
+     var n2 = new Node(0.8, 0.5, 2, NODE_TYPES.SINK);
+     var n3 = new Node(0.5, 0.2, 3, NODE_TYPES.OTHER);
+     var n4 = new Node(0.5, 0.8, 4, NODE_TYPES.OTHER);
 
-    NODES[0] = n1;
-    NODES[1] = n2;
-    NODES[2] = n3;
-    NODES[3] = n4;
-
-    // Creating all edge objects
-    addEdge(2, 3, n1, n3);
-    addEdge(1, 5, n1, n4);
-    addEdge(2, 3, n3, n2);
-    addEdge(1, 5, n4, n2);
+     NODES[0] = n1;
+     NODES[1] = n2;
+     NODES[2] = n3;
+     NODES[3] = n4;
+    if (dropdownIndex > 0) {
+        if (dropdownIndex === 1) {
+            // Creating all edge objects
+            addEdge(2, 3, n1, n3);
+            addEdge(1, 5, n1, n4);
+            addEdge(2, 3, n3, n2);
+            addEdge(1, 5, n4, n2);
+        } else if (dropdownIndex === 2) {
+            // Creating all edge objects
+            addEdge(1, 1, n1, n3);
+            addEdge(1, 2, n1, n4);
+            addEdge(1, 1, n3, n2);
+            addEdge(1, 2, n4, n2);
+        }
+    }
 }
 
 NodeMap.prototype.findSourceAndSink = function () {
     //Ensures n1 is far most left node, and n2 is far most right node
-    for (let i = 0; i < this.numsites; i++) {
+    for (let i = 0; i < params.numsites; i++) {
         //makes far most left node the source
         if (NODES[i].x < NODES[0].x) {
             var tempNode = NODES[i];
@@ -210,7 +218,7 @@ NodeMap.prototype.drawNodeMap = function () {
             blue = Math.floor(dist * 2 * 255);
         }
         GAME_ENGINE.ctx.strokeStyle = "rgb(" + red + "," + green + "," + blue + ")";
-        
+
         GAME_ENGINE.ctx.stroke();
     }
 
@@ -232,7 +240,7 @@ NodeMap.prototype.drawNodeMap = function () {
             green = 0;
             blue = Math.floor(dist * 2 * 255);
         }
-        
+
         GAME_ENGINE.ctx.fillStyle = "rgb(" + red + "," + green + "," + blue + ")";
         GAME_ENGINE.ctx.fill();
         GAME_ENGINE.ctx.strokeStyle = "Black";

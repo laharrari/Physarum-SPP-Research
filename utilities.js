@@ -59,7 +59,7 @@ function GaussianElimination(A) {
 function addHTMLListeners() {
     var speedSlider = document.getElementById("speedSlider");
     var randomButton = document.getElementById("randomButton");
-    var hardcodedButton = document.getElementById("hardcodedButton");
+    var hardcodedSelect = document.getElementById("hardcoded");
     speedSlider.addEventListener("change", function () {
         tickDelay = maxTickDelay - speedSlider.value;
         SIMULATION.maxCounter = tickDelay;
@@ -68,7 +68,7 @@ function addHTMLListeners() {
     randomButton.addEventListener("click", function () {
         newSystem(0);
     });
-    hardcodedButton.addEventListener("click", function () {
+    hardcodedSelect.addEventListener("change", function () {
         newSystem(1);
     });
 }
@@ -76,6 +76,10 @@ function addHTMLListeners() {
 function getParams() {
     var alphaTF = document.getElementById("alphaTF");
     params.alpha = alphaTF.value;
+    var numsitesTF = document.getElementById("numsitesTF");
+    params.numsites = numsitesTF.value;
+    var reachTF = document.getElementById("reachTF");
+    params.reach = reachTF.value;
 }
 
 function newSystem(theMapType) {
