@@ -18,6 +18,7 @@ function NodeMap(theMapType) {
     } else if (theMapType === 1) {
         this.hardcodedSystem();
     }
+    document.getElementById("iteration").innerHTML = SIMULATION.iterationCount;
     console.log("Map Created!");
 
     // console.log("Iteration: " + SIMULATION.iterationCount);
