@@ -158,6 +158,45 @@ NodeMap.prototype.hardcodedSystem = function () {
             addEdge(1, 2, n1, n4);
             addEdge(1, 1, n3, n2);
             addEdge(1, 2, n4, n2);
+        } else if (dropdownIndex === 3) {
+            var node1 = new Node(0.2, 0.5, 1, NODE_TYPES.SOURCE);
+            var node2 = new Node(0.8, 0.5, 2, NODE_TYPES.SINK);
+            var node3 = new Node(0.3, 0.25, 3, NODE_TYPES.OTHER);
+            var node4 = new Node(0.3, 0.75, 4, NODE_TYPES.OTHER);
+            var node5 = new Node(0.4, 0.5, 5, NODE_TYPES.OTHER);
+            var node6 = new Node(0.5, 0.25, 6, NODE_TYPES.OTHER);
+            var node7 = new Node(0.5, 0.75, 7, NODE_TYPES.OTHER);
+            var node8 = new Node(0.6, 0.5, 8, NODE_TYPES.OTHER);
+            var node9 = new Node(0.7, 0.25, 9, NODE_TYPES.OTHER);
+            var node10 = new Node(0.7, 0.75, 10, NODE_TYPES.OTHER);
+
+            NODES[0] = node1;
+            NODES[1] = node2;
+            NODES[2] = node3;
+            NODES[3] = node4;
+            NODES[4] = node5;
+            NODES[5] = node6;
+            NODES[6] = node7;
+            NODES[7] = node8;
+            NODES[8] = node9;
+            NODES[9] = node10;
+
+            addEdge(1, 2, node1, node3);
+            addEdge(1, 2, node1, node4);
+            addEdge(1, 2, node3, node5);
+            addEdge(1, 2, node3, node6);
+            addEdge(1, 2, node4, node5);
+            addEdge(1, 2, node4, node7);
+            addEdge(1, 2, node5, node6);
+            addEdge(1, 2, node5, node7);
+            addEdge(1, 2, node6, node8);
+            addEdge(1, 2, node6, node9);
+            addEdge(1, 2, node7, node8);
+            addEdge(1, 2, node7, node10);
+            addEdge(1, 2, node8, node9);
+            addEdge(1, 2, node8, node10);
+            addEdge(1, 2, node9, node2);
+            addEdge(1, 2, node10, node2);
         }
     }
 }
