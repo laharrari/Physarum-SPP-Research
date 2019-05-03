@@ -37,3 +37,7 @@ canvas {
     display: inline;
     color: red;
 }
+
+#iteration {
+    display: inline;
+}

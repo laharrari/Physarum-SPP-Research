@@ -32,6 +32,7 @@ Simulation.prototype.update = function () {
  */
 Simulation.prototype.nextIteration = function () {
     this.iterationCount++;
+    document.getElementById("iteration").innerHTML = this.iterationCount;
     console.log("Nodes:");
     console.table(NODES);
     console.log("Edges:");
