@@ -3,6 +3,9 @@
 var GAME_ENGINE = new GameEngine();
 var EDGES = [];
 var NODES = [];
+// Variables for bookkeeping the number of sinks and sources
+var SINK_COUNT = 0;
+var SOURCE_COUNT = 0;
 //enum for the node types
 const NODE_TYPES = {
     SOURCE: 'source',
@@ -136,6 +139,9 @@ NodeMap.prototype.adjVertexCheck = function (vertex, visited) {
 
 NodeMap.prototype.hardcodedSystem = function () {
     var dropdownIndex = document.getElementById("hardcoded").selectedIndex;
+    SINK_COUNT = 1;
+    SOURCE_COUNT = 1;
+
      // Creating all node objects
      var n1 = new Node(0.2, 0.5, 1, NODE_TYPES.SOURCE);
      var n2 = new Node(0.8, 0.5, 2, NODE_TYPES.SINK);
@@ -160,6 +166,8 @@ NodeMap.prototype.hardcodedSystem = function () {
             addEdge(1, 1, n3, n2);
             addEdge(1, 2, n4, n2);
         } else if (dropdownIndex === 3) { // 10 Node Hardcode
+            SINK_COUNT = 1;
+            SOURCE_COUNT = 2;
             var node1 = new Node(0.2, 0.5, 1, NODE_TYPES.SOURCE);
             var node2 = new Node(0.8, 0.5, 2, NODE_TYPES.SINK);
             var node3 = new Node(0.3, 0.25, 3, NODE_TYPES.OTHER);
@@ -199,6 +207,9 @@ NodeMap.prototype.hardcodedSystem = function () {
             addEdge(1, 2, node9, node2);
             addEdge(1, 4, node10, node2);
         } else if (dropdownIndex === 4) { // Multiple Node Variation 2
+            SINK_COUNT = 1;
+            SOURCE_COUNT = 6;
+
             var node1 = new Node(0.65, 0.65, 1, NODE_TYPES.SINK);
             var node2 = new Node(0.8, 0.45, 2, NODE_TYPES.SOURCE);
             var node3 = new Node(0.5, 0.45, 3, NODE_TYPES.SOURCE);
@@ -228,13 +239,16 @@ NodeMap.prototype.hardcodedSystem = function () {
             addEdge(1, 2, node6, node7);
             addEdge(1, 2, node7, node3);
         } else if (dropdownIndex === 5) { // Multiple Node Variation 2
+            SINK_COUNT = 1;
+            SOURCE_COUNT = 6;
+
             var node1 = new Node(0.65, 0.65, 1, NODE_TYPES.SINK);
-            var node2 = new Node(0.8, 0.45, 2, NODE_TYPES.SOURCE);
-            var node3 = new Node(0.5, 0.45, 3, NODE_TYPES.SOURCE);
-            var node4 = new Node(.95, 0.65, 4, NODE_TYPES.SOURCE);
-            var node5 = new Node(0.8, 0.85, 5, NODE_TYPES.SOURCE);
-            var node6 = new Node(0.5, 0.85, 6, NODE_TYPES.SOURCE);
-            var node7 = new Node(0.35, 0.65, 7, NODE_TYPES.SOURCE);
+            var node2 = new Node(0.8, 0.45, 2, NODE_TYPES.OTHER);
+            var node3 = new Node(0.5, 0.45, 3, NODE_TYPES.OTHER);
+            var node4 = new Node(.95, 0.65, 4, NODE_TYPES.OTHER);
+            var node5 = new Node(0.8, 0.85, 5, NODE_TYPES.OTHER);
+            var node6 = new Node(0.5, 0.85, 6, NODE_TYPES.OTHER);
+            var node7 = new Node(0.35, 0.65, 7, NODE_TYPES.OTHER);
             var node8 = new Node(0.95, 0.3, 8, NODE_TYPES.SOURCE);
             var node9 = new Node(0.35, 0.3, 9, NODE_TYPES.SOURCE);
             var node10 = new Node(1.25, 0.65, 10, NODE_TYPES.SOURCE);
@@ -470,9 +484,9 @@ function calculateAllPressure() {
         }
         //adds the right side of augmented matrix
         if (currentNode.nodeType === NODE_TYPES.SINK) {
-            tempGauss.push(2);
+            tempGauss.push(1 * (SOURCE_COUNT / SINK_COUNT));
         } else if (currentNode.nodeType === NODE_TYPES.SOURCE) {
-            tempGauss.push(-1);
+            tempGauss.push(-1 * (SINK_COUNT / SOURCE_COUNT));
         } else {
             tempGauss.push(0);
         }
