@@ -164,7 +164,7 @@ NodeMap.prototype.hardcodedSystem = function () {
             var node2 = new Node(0.8, 0.5, 2, NODE_TYPES.SINK);
             var node3 = new Node(0.3, 0.25, 3, NODE_TYPES.OTHER);
             var node4 = new Node(0.3, 0.75, 4, NODE_TYPES.OTHER);
-            var node5 = new Node(0.4, 0.5, 5, NODE_TYPES.OTHER);
+            var node5 = new Node(0.4, 0.5, 5, NODE_TYPES.SOURCE);
             var node6 = new Node(0.5, 0.25, 6, NODE_TYPES.OTHER);
             var node7 = new Node(0.5, 0.75, 7, NODE_TYPES.OTHER);
             var node8 = new Node(0.6, 0.5, 8, NODE_TYPES.OTHER);
@@ -183,21 +183,21 @@ NodeMap.prototype.hardcodedSystem = function () {
             NODES[9] = node10;
 
             addEdge(1, 2, node1, node3);
-            addEdge(1, 2, node1, node4);
+            addEdge(1, 4, node1, node4);
             addEdge(1, 2, node3, node5);
             addEdge(1, 2, node3, node6);
-            addEdge(1, 2, node4, node5);
-            addEdge(1, 2, node4, node7);
-            addEdge(1, 2, node5, node6);
+            addEdge(1, 4, node4, node5);
+            addEdge(1, 4, node4, node7);
+            addEdge(1, 4, node5, node6);
             addEdge(1, 2, node5, node7);
-            addEdge(1, 2, node6, node8);
+            addEdge(1, 4, node6, node8);
             addEdge(1, 2, node6, node9);
             addEdge(1, 2, node7, node8);
-            addEdge(1, 2, node7, node10);
+            addEdge(1, 4, node7, node10);
             addEdge(1, 2, node8, node9);
-            addEdge(1, 2, node8, node10);
+            addEdge(1, 4, node8, node10);
             addEdge(1, 2, node9, node2);
-            addEdge(1, 2, node10, node2);
+            addEdge(1, 4, node10, node2);
         }
     }
 }
@@ -269,7 +269,7 @@ NodeMap.prototype.drawNodeMap = function () {
     for (var i = 0; i < NODES.length; i++) {
         var node = NODES[i];
         GAME_ENGINE.ctx.beginPath();
-        var rad = Math.max(node.pressure * 7.5, Math.min(2 * (1 + sites[i]), 50));
+        var rad = Math.sqrt(Math.max(node.pressure * 7.5, Math.min(2 * (1 + sites[i]), 50)));
         GAME_ENGINE.ctx.arc(w * node.x + x, h * node.y + y, rad, 0, 2 * Math.PI, false);
         var dist = Math.sqrt(node.x * node.x + node.y * node.y) / Math.sqrt(2);
         var red = Math.floor((dist - 0.5) * 2 * 255);
@@ -386,9 +386,9 @@ function calculateAllPressure() {
             tempGauss[nodeJ.nodeLabel - 1] += (edge.conductivity / edge.length * -(pj));
         }
         //adds the right side of augmented matrix
-        if (currentNode.nodeLabel === 2) {
-            tempGauss.push(1);
-        } else if (currentNode.nodeLabel === 1) {
+        if (currentNode.nodeType === NODE_TYPES.SINK) {
+            tempGauss.push(2);
+        } else if (currentNode.nodeType === NODE_TYPES.SOURCE) {
             tempGauss.push(-1);
         } else {
             tempGauss.push(0);
