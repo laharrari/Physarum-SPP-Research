@@ -159,7 +159,7 @@ NodeMap.prototype.hardcodedSystem = function () {
             addEdge(1, 2, n1, n4);
             addEdge(1, 1, n3, n2);
             addEdge(1, 2, n4, n2);
-        } else if (dropdownIndex === 3) {
+        } else if (dropdownIndex === 3) { // 10 Node Hardcode
             var node1 = new Node(0.2, 0.5, 1, NODE_TYPES.SOURCE);
             var node2 = new Node(0.8, 0.5, 2, NODE_TYPES.SINK);
             var node3 = new Node(0.3, 0.25, 3, NODE_TYPES.OTHER);
@@ -198,6 +198,89 @@ NodeMap.prototype.hardcodedSystem = function () {
             addEdge(1, 4, node8, node10);
             addEdge(1, 2, node9, node2);
             addEdge(1, 4, node10, node2);
+        } else if (dropdownIndex === 4) { // Multiple Node Variation 2
+            var node1 = new Node(0.65, 0.65, 1, NODE_TYPES.SINK);
+            var node2 = new Node(0.8, 0.45, 2, NODE_TYPES.SOURCE);
+            var node3 = new Node(0.5, 0.45, 3, NODE_TYPES.SOURCE);
+            var node4 = new Node(.95, 0.65, 4, NODE_TYPES.SOURCE);
+            var node5 = new Node(0.8, 0.85, 5, NODE_TYPES.SOURCE);
+            var node6 = new Node(0.5, 0.85, 6, NODE_TYPES.SOURCE);
+            var node7 = new Node(0.35, 0.65, 7, NODE_TYPES.SOURCE);
+            
+            NODES[0] = node1;
+            NODES[1] = node2;
+            NODES[2] = node3;
+            NODES[3] = node4;
+            NODES[4] = node5;
+            NODES[5] = node6;
+            NODES[6] = node7;
+
+            addEdge(1, 2, node1, node2);
+            addEdge(1, 2, node1, node3);
+            addEdge(1, 2, node1, node4);
+            addEdge(1, 2, node1, node5);
+            addEdge(1, 2, node1, node6);
+            addEdge(1, 2, node1, node7);
+            addEdge(1, 2, node3, node2);
+            addEdge(1, 2, node2, node4);
+            addEdge(1, 2, node4, node5);
+            addEdge(1, 2, node5, node6);
+            addEdge(1, 2, node6, node7);
+            addEdge(1, 2, node7, node3);
+        } else if (dropdownIndex === 5) { // Multiple Node Variation 2
+            var node1 = new Node(0.65, 0.65, 1, NODE_TYPES.SINK);
+            var node2 = new Node(0.8, 0.45, 2, NODE_TYPES.SOURCE);
+            var node3 = new Node(0.5, 0.45, 3, NODE_TYPES.SOURCE);
+            var node4 = new Node(.95, 0.65, 4, NODE_TYPES.SOURCE);
+            var node5 = new Node(0.8, 0.85, 5, NODE_TYPES.SOURCE);
+            var node6 = new Node(0.5, 0.85, 6, NODE_TYPES.SOURCE);
+            var node7 = new Node(0.35, 0.65, 7, NODE_TYPES.SOURCE);
+            var node8 = new Node(0.95, 0.3, 8, NODE_TYPES.SOURCE);
+            var node9 = new Node(0.35, 0.3, 9, NODE_TYPES.SOURCE);
+            var node10 = new Node(1.25, 0.65, 10, NODE_TYPES.SOURCE);
+            var node11 = new Node(0.95, 1.0, 11, NODE_TYPES.SOURCE);
+            var node12 = new Node(0.35, 1.0, 12, NODE_TYPES.SOURCE);
+            var node13 = new Node(0.05, 0.65, 13, NODE_TYPES.SOURCE);
+            
+            NODES[0] = node1;
+            NODES[1] = node2;
+            NODES[2] = node3;
+            NODES[3] = node4;
+            NODES[4] = node5;
+            NODES[5] = node6;
+            NODES[6] = node7;
+            NODES[7] = node8;
+            NODES[8] = node9;
+            NODES[9] = node10;
+            NODES[10] = node11;
+            NODES[11] = node12;
+            NODES[12] = node13;
+
+
+            addEdge(1, 2, node1, node2);
+            addEdge(1, 2, node1, node3);
+            addEdge(1, 2, node1, node4);
+            addEdge(1, 2, node1, node5);
+            addEdge(1, 2, node1, node6);
+            addEdge(1, 2, node1, node7);
+            addEdge(1, 2, node3, node2);
+            addEdge(1, 2, node2, node4);
+            addEdge(1, 2, node4, node5);
+            addEdge(1, 2, node5, node6);
+            addEdge(1, 2, node6, node7);
+            addEdge(1, 2, node7, node3);
+            addEdge(1, 2, node9, node3);
+            addEdge(1, 2, node8, node2);
+            addEdge(1, 2, node4, node10);
+            addEdge(1, 2, node11, node5);
+            addEdge(1, 2, node12, node6);
+            addEdge(1, 2, node13, node7);
+            addEdge(1, 2, node9, node8);
+            addEdge(1, 2, node8, node10);
+            addEdge(1, 2, node10, node11);
+            addEdge(1, 2, node11, node12);
+            addEdge(1, 2, node12, node13);
+            addEdge(1, 2, node13, node9);
         }
     }
 }
