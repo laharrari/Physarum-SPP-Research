@@ -70,6 +70,7 @@ function addHTMLListeners() {
     });
     hardcodedSelect.addEventListener("change", function () {
         newSystem(1);
+        hardcodedSelect.selectedIndex = 0;
     });
 }
 

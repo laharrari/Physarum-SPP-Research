@@ -32,6 +32,7 @@ Simulation.prototype.update = function () {
  */
 Simulation.prototype.nextIteration = function () {
     this.iterationCount++;
+    document.getElementById("iteration").innerHTML = this.iterationCount;
     console.log("Nodes:");
     console.table(NODES);
     console.log("Edges:");
@@ -45,8 +46,11 @@ Simulation.prototype.nextIteration = function () {
         console.log("Q" + edge.startNode.nodeLabel + edge.endNode.nodeLabel + ": " + edge.flux);
         console.log("D" + edge.startNode.nodeLabel + edge.endNode.nodeLabel + ": " + edge.conductivity);
         //condition to stop simulation: flux of one of the path converges to 0
-        if (edge.conductivity < 0.0001 || this.iterationCount > 100) {
-            this.stopSimulation = true;
+        // if (edge.conductivity < 0.0001 || this.iterationCount > 100) {
+        //     this.stopSimulation = true;
+        // }
+        if (edge.conductivity < 0.0001) {
+            EDGES.splice(i, 1);
         }
     }
     // do not update last iteration count when condition to stop is met

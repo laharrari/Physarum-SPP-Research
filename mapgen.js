@@ -3,6 +3,9 @@
 var GAME_ENGINE = new GameEngine();
 var EDGES = [];
 var NODES = [];
+// Variables for bookkeeping the number of sinks and sources
+var SINK_COUNT = 0;
+var SOURCE_COUNT = 0;
 //enum for the node types
 const NODE_TYPES = {
     SOURCE: 'source',
@@ -18,6 +21,7 @@ function NodeMap(theMapType) {
     } else if (theMapType === 1) {
         this.hardcodedSystem();
     }
+    document.getElementById("iteration").innerHTML = SIMULATION.iterationCount;
     console.log("Map Created!");
 
     // console.log("Iteration: " + SIMULATION.iterationCount);
@@ -135,6 +139,9 @@ NodeMap.prototype.adjVertexCheck = function (vertex, visited) {
 
 NodeMap.prototype.hardcodedSystem = function () {
     var dropdownIndex = document.getElementById("hardcoded").selectedIndex;
+    SINK_COUNT = 1;
+    SOURCE_COUNT = 1;
+
      // Creating all node objects
      var n1 = new Node(0.2, 0.5, 1, NODE_TYPES.SOURCE);
      var n2 = new Node(0.8, 0.5, 2, NODE_TYPES.SINK);
@@ -158,12 +165,14 @@ NodeMap.prototype.hardcodedSystem = function () {
             addEdge(1, 2, n1, n4);
             addEdge(1, 1, n3, n2);
             addEdge(1, 2, n4, n2);
-        } else if (dropdownIndex === 3) {
+        } else if (dropdownIndex === 3) { // 10 Node Hardcode
+            SINK_COUNT = 1;
+            SOURCE_COUNT = 2;
             var node1 = new Node(0.2, 0.5, 1, NODE_TYPES.SOURCE);
             var node2 = new Node(0.8, 0.5, 2, NODE_TYPES.SINK);
             var node3 = new Node(0.3, 0.25, 3, NODE_TYPES.OTHER);
             var node4 = new Node(0.3, 0.75, 4, NODE_TYPES.OTHER);
-            var node5 = new Node(0.4, 0.5, 5, NODE_TYPES.OTHER);
+            var node5 = new Node(0.4, 0.5, 5, NODE_TYPES.SOURCE);
             var node6 = new Node(0.5, 0.25, 6, NODE_TYPES.OTHER);
             var node7 = new Node(0.5, 0.75, 7, NODE_TYPES.OTHER);
             var node8 = new Node(0.6, 0.5, 8, NODE_TYPES.OTHER);
@@ -182,21 +191,110 @@ NodeMap.prototype.hardcodedSystem = function () {
             NODES[9] = node10;
 
             addEdge(1, 2, node1, node3);
-            addEdge(1, 2, node1, node4);
+            addEdge(1, 4, node1, node4);
             addEdge(1, 2, node3, node5);
             addEdge(1, 2, node3, node6);
-            addEdge(1, 2, node4, node5);
-            addEdge(1, 2, node4, node7);
-            addEdge(1, 2, node5, node6);
+            addEdge(1, 4, node4, node5);
+            addEdge(1, 4, node4, node7);
+            addEdge(1, 4, node5, node6);
             addEdge(1, 2, node5, node7);
-            addEdge(1, 2, node6, node8);
+            addEdge(1, 4, node6, node8);
             addEdge(1, 2, node6, node9);
             addEdge(1, 2, node7, node8);
-            addEdge(1, 2, node7, node10);
+            addEdge(1, 4, node7, node10);
             addEdge(1, 2, node8, node9);
-            addEdge(1, 2, node8, node10);
+            addEdge(1, 4, node8, node10);
             addEdge(1, 2, node9, node2);
-            addEdge(1, 2, node10, node2);
+            addEdge(1, 4, node10, node2);
+        } else if (dropdownIndex === 4) { // Multiple Node Variation 2
+            SINK_COUNT = 1;
+            SOURCE_COUNT = 6;
+
+            var node1 = new Node(0.65, 0.65, 1, NODE_TYPES.SINK);
+            var node2 = new Node(0.8, 0.45, 2, NODE_TYPES.SOURCE);
+            var node3 = new Node(0.5, 0.45, 3, NODE_TYPES.SOURCE);
+            var node4 = new Node(.95, 0.65, 4, NODE_TYPES.SOURCE);
+            var node5 = new Node(0.8, 0.85, 5, NODE_TYPES.SOURCE);
+            var node6 = new Node(0.5, 0.85, 6, NODE_TYPES.SOURCE);
+            var node7 = new Node(0.35, 0.65, 7, NODE_TYPES.SOURCE);
+            
+            NODES[0] = node1;
+            NODES[1] = node2;
+            NODES[2] = node3;
+            NODES[3] = node4;
+            NODES[4] = node5;
+            NODES[5] = node6;
+            NODES[6] = node7;
+
+            addEdge(1, 2, node1, node2);
+            addEdge(1, 2, node1, node3);
+            addEdge(1, 2, node1, node4);
+            addEdge(1, 2, node1, node5);
+            addEdge(1, 2, node1, node6);
+            addEdge(1, 2, node1, node7);
+            addEdge(1, 2, node3, node2);
+            addEdge(1, 2, node2, node4);
+            addEdge(1, 2, node4, node5);
+            addEdge(1, 2, node5, node6);
+            addEdge(1, 2, node6, node7);
+            addEdge(1, 2, node7, node3);
+        } else if (dropdownIndex === 5) { // Multiple Node Variation 2
+            SINK_COUNT = 1;
+            SOURCE_COUNT = 6;
+
+            var node1 = new Node(0.65, 0.65, 1, NODE_TYPES.SINK);
+            var node2 = new Node(0.8, 0.45, 2, NODE_TYPES.OTHER);
+            var node3 = new Node(0.5, 0.45, 3, NODE_TYPES.OTHER);
+            var node4 = new Node(.95, 0.65, 4, NODE_TYPES.OTHER);
+            var node5 = new Node(0.8, 0.85, 5, NODE_TYPES.OTHER);
+            var node6 = new Node(0.5, 0.85, 6, NODE_TYPES.OTHER);
+            var node7 = new Node(0.35, 0.65, 7, NODE_TYPES.OTHER);
+            var node8 = new Node(0.95, 0.3, 8, NODE_TYPES.SOURCE);
+            var node9 = new Node(0.35, 0.3, 9, NODE_TYPES.SOURCE);
+            var node10 = new Node(1.25, 0.65, 10, NODE_TYPES.SOURCE);
+            var node11 = new Node(0.95, 1.0, 11, NODE_TYPES.SOURCE);
+            var node12 = new Node(0.35, 1.0, 12, NODE_TYPES.SOURCE);
+            var node13 = new Node(0.05, 0.65, 13, NODE_TYPES.SOURCE);
+            
+            NODES[0] = node1;
+            NODES[1] = node2;
+            NODES[2] = node3;
+            NODES[3] = node4;
+            NODES[4] = node5;
+            NODES[5] = node6;
+            NODES[6] = node7;
+            NODES[7] = node8;
+            NODES[8] = node9;
+            NODES[9] = node10;
+            NODES[10] = node11;
+            NODES[11] = node12;
+            NODES[12] = node13;
+
+
+            addEdge(1, 2, node1, node2);
+            addEdge(1, 2, node1, node3);
+            addEdge(1, 2, node1, node4);
+            addEdge(1, 2, node1, node5);
+            addEdge(1, 2, node1, node6);
+            addEdge(1, 2, node1, node7);
+            addEdge(1, 2, node3, node2);
+            addEdge(1, 2, node2, node4);
+            addEdge(1, 2, node4, node5);
+            addEdge(1, 2, node5, node6);
+            addEdge(1, 2, node6, node7);
+            addEdge(1, 2, node7, node3);
+            addEdge(1, 2, node9, node3);
+            addEdge(1, 2, node8, node2);
+            addEdge(1, 2, node4, node10);
+            addEdge(1, 2, node11, node5);
+            addEdge(1, 2, node12, node6);
+            addEdge(1, 2, node13, node7);
+            addEdge(1, 2, node9, node8);
+            addEdge(1, 2, node8, node10);
+            addEdge(1, 2, node10, node11);
+            addEdge(1, 2, node11, node12);
+            addEdge(1, 2, node12, node13);
+            addEdge(1, 2, node13, node9);
         }
     }
 }
@@ -268,7 +366,7 @@ NodeMap.prototype.drawNodeMap = function () {
     for (var i = 0; i < NODES.length; i++) {
         var node = NODES[i];
         GAME_ENGINE.ctx.beginPath();
-        var rad = Math.max(node.pressure * 7.5, Math.min(2 * (1 + sites[i]), 50));
+        var rad = Math.sqrt(Math.max(node.pressure * 7.5, Math.min(2 * (1 + sites[i]), 50)));
         GAME_ENGINE.ctx.arc(w * node.x + x, h * node.y + y, rad, 0, 2 * Math.PI, false);
         var dist = Math.sqrt(node.x * node.x + node.y * node.y) / Math.sqrt(2);
         var red = Math.floor((dist - 0.5) * 2 * 255);
@@ -385,10 +483,10 @@ function calculateAllPressure() {
             tempGauss[nodeJ.nodeLabel - 1] += (edge.conductivity / edge.length * -(pj));
         }
         //adds the right side of augmented matrix
-        if (currentNode.nodeLabel === 2) {
-            tempGauss.push(1);
-        } else if (currentNode.nodeLabel === 1) {
-            tempGauss.push(-1);
+        if (currentNode.nodeType === NODE_TYPES.SINK) {
+            tempGauss.push(1 * (SOURCE_COUNT / SINK_COUNT));
+        } else if (currentNode.nodeType === NODE_TYPES.SOURCE) {
+            tempGauss.push(-1 * (SINK_COUNT / SOURCE_COUNT));
         } else {
             tempGauss.push(0);
         }
