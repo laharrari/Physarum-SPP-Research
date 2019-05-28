@@ -24,11 +24,11 @@ function NodeMap(theMapType) {
     document.getElementById("iteration").innerHTML = SIMULATION.iterationCount;
     console.log("Map Created!");
 
-    // console.log("Iteration: " + SIMULATION.iterationCount);
+    console.log("Iteration: " + SIMULATION.iterationCount);
     for (let i = 0; i < EDGES.length; i++) {
         var edge = EDGES[i];
-        // console.log("D" + edge.startNode.nodeLabel + edge.endNode.nodeLabel + ": " + edge.conductivity);
-        // console.log("L" + edge.startNode.nodeLabel + edge.endNode.nodeLabel + ": " + edge.length);
+        console.log("D" + edge.startNode.nodeLabel + edge.endNode.nodeLabel + ": " + edge.conductivity);
+        console.log("L" + edge.startNode.nodeLabel + edge.endNode.nodeLabel + ": " + edge.length);
     }
 }
 
@@ -348,11 +348,11 @@ NodeMap.prototype.drawNodeMap = function () {
 
         var red = Math.floor((EDGES[i].flux) * 2 * 255);
         var green = Math.floor((EDGES[i].flux) * 2 * 255);
-        var blue = Math.floor(255);
-        if (red < 0) {
+        var blue = Math.floor((EDGES[i].flux) * 2 * 255);
+        if (red < 0 || green < 0 < blue < 0) {
             red = 0;
             green = 0;
-            blue = Math.floor(dist * 2 * 255);
+            blue = 0;
         }
         GAME_ENGINE.ctx.strokeStyle = "rgb(" + red + "," + green + "," + blue + ")";
 
@@ -366,22 +366,19 @@ NodeMap.prototype.drawNodeMap = function () {
     for (var i = 0; i < NODES.length; i++) {
         var node = NODES[i];
         GAME_ENGINE.ctx.beginPath();
-        var rad = Math.sqrt(Math.max(node.pressure * 7.5, Math.min(2 * (1 + sites[i]), 50)));
+        var rad = Math.sqrt(Math.max(node.pressure * 10, Math.min(2 * (1 + sites[i]), 50)));
         GAME_ENGINE.ctx.arc(w * node.x + x, h * node.y + y, rad, 0, 2 * Math.PI, false);
         var dist = Math.sqrt(node.x * node.x + node.y * node.y) / Math.sqrt(2);
-        var red = Math.floor((dist - 0.5) * 2 * 255);
-        var green = Math.floor((dist - 0.5) * 2 * 255);
-        var blue = Math.floor(255);
-        if (red < 0) {
-            red = 0;
-            green = 0;
-            blue = Math.floor(dist * 2 * 255);
+        
+        color = "black";
+        if (node.nodeType === NODE_TYPES.SINK) {
+            color = "red";
+        } else if (node.nodeType === NODE_TYPES.SOURCE) {
+            color = "green";
         }
 
-        GAME_ENGINE.ctx.fillStyle = "rgb(" + red + "," + green + "," + blue + ")";
+        GAME_ENGINE.ctx.fillStyle = color;
         GAME_ENGINE.ctx.fill();
-        GAME_ENGINE.ctx.strokeStyle = "Black";
-        GAME_ENGINE.ctx.stroke();
 
         GAME_ENGINE.ctx.font = "20px Arial";
         GAME_ENGINE.ctx.fillStyle = "Black";
