@@ -60,6 +60,12 @@ function addHTMLListeners() {
     var speedSlider = document.getElementById("speedSlider");
     var randomButton = document.getElementById("randomButton");
     var hardcodedSelect = document.getElementById("hardcoded");
+    var startStopButton = document.getElementById("startStopButton");
+    var stepButton = document.getElementById("stepButton");
+
+    startStopButton.disabled = true;
+    stepButton.disabled = true;
+
     speedSlider.addEventListener("change", function () {
         tickDelay = maxTickDelay - speedSlider.value;
         SIMULATION.maxCounter = tickDelay;
@@ -71,6 +77,27 @@ function addHTMLListeners() {
     hardcodedSelect.addEventListener("change", function () {
         newSystem(1);
         hardcodedSelect.selectedIndex = 0;
+    });
+    startStopButton.addEventListener("click", function () {
+        if (!GAME_ENGINE.reset && !SIMULATION.stopSimulation) {
+            var state = document.getElementById("state");
+            if (GAME_ENGINE.pause) {
+                GAME_ENGINE.pause = false;
+                state.innerHTML = "Running"
+                state.style.color = "green";
+                startStopButton.innerHTML = "Stop";
+            } else {
+                GAME_ENGINE.pause = true;
+                state.innerHTML = "Paused";
+                state.style.color = "red";
+                startStopButton.innerHTML = "Start";
+            }
+        }
+    });
+    stepButton.addEventListener("click", function () {
+        if (!GAME_ENGINE.reset && !SIMULATION.stopSimulation) {
+            SIMULATION.nextIteration();
+        }
     });
 }
 
@@ -84,6 +111,10 @@ function getParams() {
 }
 
 function newSystem(theMapType) {
+    var startStopButton = document.getElementById("startStopButton");
+    var stepButton = document.getElementById("stepButton");
+    startStopButton.disabled = false;
+    stepButton.disabled = false;
     GAME_ENGINE.pause = true;
     GAME_ENGINE.reset = false;
     getParams();
