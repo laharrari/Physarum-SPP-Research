@@ -469,10 +469,10 @@ function calculateAllPressure() {
             }
             // pressure variables, p2 always = 0, every other node = 1
             var pi = pj = 1;
-            if (nodeI.nodeLabel === 2) {
+            if (nodeI.nodeType === "sink") {
                 pi = 0;
             }
-            if (nodeJ.nodeLabel === 2) {
+            if (nodeJ.nodeType === "sink") {
                 pj = 0;
             }
             //creates left hand side of equation
