@@ -33,34 +33,39 @@ function NodeMap(theMapType) {
 }
 
 NodeMap.prototype.randomSystem = function () {
+    // ******************************* FIX THIS HARDCODE *******************************
+    SINK_COUNT = 1;
+    SOURCE_COUNT = 5;
+    // ******************************* FIX THIS HARDCODE *******************************
+    console.log(params);
     // creating random nodes
     for (var i = 0; i < params.numsites; i++) {
         // calculating a random x and y to position the node
         var x = Math.random() * 1;
         var y = Math.random() * 1;
         var type;
-        if (i === 0) {
+        if (i !== 5) {
             type = NODE_TYPES.SOURCE;
-        } else if (i === 1) {
+        } else if (i === 5) {
             type = NODE_TYPES.SINK;
-        } else type = NODE_TYPES.OTHER;
+        }
 
         NODES.push(new Node(x, y, i + 1, type));
         this.addAdjVertex(i + 1);
     }
-    this.findSourceAndSink();
+    // this.findSourceAndSink();
 
     // populating adjacency matrix for edges
     for (var i = 0; i < params.numsites; i++) {
         for (var j = i + 1; j < params.numsites; j++) {
             var nodeDist = distance(NODES[i], NODES[j]);
-            var conductivity = (Math.random() * 1) + 0.1;
+            // var conductivity = (Math.random() * 1) + 0.1;
             // console.log("Random Conductivity: " + conductivity);
             if (nodeDist <= params.reach) {
-                var conductivity = (Math.random() * 1) + 0.1;
+                // var conductivity = (Math.random() * 1) + 0.1;
                 // console.log("Random Conductivity: " + conductivity);
                 // Makes sure start node is never node 2
-                if (NODES[i].nodeLabel === 2) {
+                if (NODES[i].nodeType === NODE_TYPES.SINK) {
                     addEdge(1, nodeDist, NODES[j], NODES[i]);
                     this.addAdjEdge(NODES[j].nodeLabel, NODES[i].nodeLabel);
                 } else {
@@ -110,13 +115,13 @@ NodeMap.prototype.depthFirstSearch = function (startingNode) {
     }
 
     if (connectedCount < params.numsites) {
-        var conductivity = (Math.random() * 1) + 0.1;
+        // var conductivity = (Math.random() * 1) + 0.1;
         var randomNode = Math.floor(Math.random() * params.numsites);
         while (randomNode === startingNode - 1) {
             randomNode = Math.floor(Math.random() * params.numsites);
         }
         var nodeDist = distance(NODES[startingNode - 1], NODES[randomNode]);
-        addEdge(conductivity, nodeDist, NODES[startingNode - 1], NODES[randomNode]);
+        addEdge(1, nodeDist, NODES[startingNode - 1], NODES[randomNode]);
     }
 }
 
@@ -271,12 +276,12 @@ NodeMap.prototype.hardcodedSystem = function () {
             NODES[12] = node13;
 
 
-            addEdge(1, 2, node1, node2);
+            addEdge(1, 10, node1, node2);
             addEdge(1, 2, node1, node3);
             addEdge(1, 2, node1, node4);
-            addEdge(1, 2, node1, node5);
+            addEdge(1, 10, node1, node5);
             addEdge(1, 2, node1, node6);
-            addEdge(1, 2, node1, node7);
+            addEdge(1, 10, node1, node7);
             addEdge(1, 2, node3, node2);
             addEdge(1, 2, node2, node4);
             addEdge(1, 2, node4, node5);
@@ -284,11 +289,11 @@ NodeMap.prototype.hardcodedSystem = function () {
             addEdge(1, 2, node6, node7);
             addEdge(1, 2, node7, node3);
             addEdge(1, 2, node9, node3);
-            addEdge(1, 2, node8, node2);
+            addEdge(1, 10, node8, node2);
             addEdge(1, 2, node4, node10);
-            addEdge(1, 2, node11, node5);
+            addEdge(1, 10, node11, node5);
             addEdge(1, 2, node12, node6);
-            addEdge(1, 2, node13, node7);
+            addEdge(1, 10, node13, node7);
             addEdge(1, 2, node9, node8);
             addEdge(1, 2, node8, node10);
             addEdge(1, 2, node10, node11);
