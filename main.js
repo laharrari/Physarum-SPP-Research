@@ -12,5 +12,6 @@ ASSET_MANAGER.downloadAll(function () {
     GAME_ENGINE.init(ctx);
     GAME_ENGINE.start();
     addHTMLListeners();
+    setParams();
     myCanvas.focus();
 });

@@ -110,6 +110,15 @@ function getParams() {
     params.reach = reachTF.value;
 }
 
+function setParams() {
+    var alphaTF = document.getElementById("alphaTF");
+    alphaTF.value = params.alpha;
+    var numsitesTF = document.getElementById("numsitesTF");
+    numsitesTF.value = params.numsites;
+    var reachTF = document.getElementById("reachTF");
+    reachTF.value = params.reach;
+}
+
 function newSystem(theMapType) {
     var startStopButton = document.getElementById("startStopButton");
     var stepButton = document.getElementById("stepButton");
