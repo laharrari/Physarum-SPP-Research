@@ -39,26 +39,37 @@ Simulation.prototype.nextIteration = function () {
     console.table(EDGES);
     console.log("Iteration: " + this.iterationCount);
     calculateAllPressure();
+    var sumRateOfChange = 0;
     for (let i = 0; i < EDGES.length; i++) {
         var edge = EDGES[i];
         edge.calculateFlux();
         edge.calculateConductivity();
         console.log("Q" + edge.startNode.nodeLabel + edge.endNode.nodeLabel + ": " + edge.flux);
         console.log("D" + edge.startNode.nodeLabel + edge.endNode.nodeLabel + ": " + edge.conductivity);
-        //condition to stop simulation: flux of one of the path converges to 0
-        // if (edge.conductivity < 0.0001 || this.iterationCount > 100) {
-        //     this.stopSimulation = true;
-        // }
         if (edge.conductivity < 0.0001) {
             EDGES.splice(i, 1);
         }
+        sumRateOfChange += edge.rateOfChange;
     }
+
+    var avgRateOfChange = sumRateOfChange / EDGES.length;
+    console.log(avgRateOfChange);
+    if (avgRateOfChange <= 0.0001) {
+        this.stopSimulation = true;
+    }
+
     // do not update last iteration count when condition to stop is met
     if (this.stopSimulation) {
+        var startStopButton = document.getElementById("startStopButton");
+        var stepButton = document.getElementById("stepButton");
         var state = document.getElementById("state");
         state.innerHTML = "Stopped";
         state.style.color = "red";
+        startStopButton.disabled = true;
+        stepButton.disabled = true;
         return;
     }
     console.log("");
 }
+
+// Simulation.prototype.

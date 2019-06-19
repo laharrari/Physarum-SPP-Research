@@ -123,6 +123,7 @@ function newSystem(theMapType) {
     var startStopButton = document.getElementById("startStopButton");
     var stepButton = document.getElementById("stepButton");
     startStopButton.disabled = false;
+    startStopButton.innerHTML = "Start";
     stepButton.disabled = false;
     GAME_ENGINE.pause = true;
     GAME_ENGINE.reset = false;
