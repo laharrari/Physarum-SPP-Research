@@ -28,27 +28,26 @@ function NodeMap(theMapType) {
 
 NodeMap.prototype.randomSystem = function () {
     var dropDownIndex = document.getElementById("network").selectedIndex;
-    // ******************************* FIX THIS HARDCODE *******************************
-    SINK_COUNT = 1;
-    SOURCE_COUNT = 5;
-    // ******************************* FIX THIS HARDCODE *******************************
-    console.log(params);
+    SINK_COUNT = params.sinkCount;
+    SOURCE_COUNT = params.sourceCount;
     // creating random nodes
     for (var i = 0; i < params.numsites; i++) {
         // calculating a random x and y to position the node
         var x = Math.random() * 1;
         var y = Math.random() * 1;
         var type;
+
+        //**********************************NEED TO FIX PICKING SOURCE AND SINKS************************************************ */
         if (i !== 5) {
             type = NODE_TYPES.SOURCE;
         } else if (i === 5) {
             type = NODE_TYPES.SINK;
         }
+        //*********************************************************************************************************************** */
 
         NODES.push(new Node(x, y, i + 1, type));
         this.addAdjVertex(i + 1);
     }
-    // this.findSourceAndSink();
     if (dropDownIndex === 0) {
         this.populateEdges();
         // Testing and correcting islands
@@ -303,34 +302,6 @@ NodeMap.prototype.hardcodedSystem = function () {
     }
 }
 
-NodeMap.prototype.findSourceAndSink = function () {
-    //Ensures n1 is far most left node, and n2 is far most right node
-    for (let i = 0; i < params.numsites; i++) {
-        //makes far most left node the source
-        if (NODES[i].x < NODES[0].x) {
-            var tempNode = NODES[i];
-            var tempLabel = NODES[i].nodeLabel;
-            NODES[i] = NODES[0];
-            NODES[0] = tempNode;
-            NODES[0].nodeType = NODE_TYPES.SOURCE;
-            NODES[i].nodeType = NODE_TYPES.OTHER;
-            NODES[0].nodeLabel = NODES[i].nodeLabel;
-            NODES[i].nodeLabel = tempLabel;
-        }
-
-        //makes far most right node the source
-        if (NODES[i].x > NODES[1].x) {
-            var tempNode = NODES[i];
-            var tempLabel = NODES[i].nodeLabel;
-            NODES[i] = NODES[1];
-            NODES[1] = tempNode;
-            NODES[1].nodeType = NODE_TYPES.SINK;
-            NODES[i].nodeType = NODE_TYPES.OTHER;
-            NODES[1].nodeLabel = NODES[i].nodeLabel;
-            NODES[i].nodeLabel = tempLabel;
-        }
-    }
-}
 
 // drawing
 NodeMap.prototype.drawNodeMap = function () {
