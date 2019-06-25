@@ -56,25 +56,7 @@ GameEngine.prototype.start = function () {
 
 GameEngine.prototype.startInput = function () {
     var that = this;
-    //REMOVE LATER: KEY LISTENERS FOR STEPPING TO NEXT ITERATION
-    this.ctx.canvas.addEventListener("keydown", function (e) {
-        if (!GAME_ENGINE.reset && !SIMULATION.stopSimulation) {
-            if (e.code === "KeyS") {
-                SIMULATION.nextIteration();
-            } else if (e.code === "KeyP") {
-                var state = document.getElementById("state");
-                if (that.pause) {
-                    that.pause = false;
-                    state.innerHTML = "Running"
-                    state.style.color = "green";
-                } else {
-                    that.pause = true;
-                    state.innerHTML = "Paused";
-                    state.style.color = "red";
-                }
-            }
-        }
-    });
+    
 }
 
 GameEngine.prototype.addEntity = function (entity) {

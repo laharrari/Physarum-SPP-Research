@@ -1,5 +1,8 @@
 // Code provided by Dr. Chris Marriott.
 
+/**
+ * Finds the distance between two nodes.
+ */
 var distance = function (p, q) {
     return Math.sqrt((p.x - q.x) * (p.x - q.x) + (p.y - q.y) * (p.y - q.y));
 }
@@ -60,6 +63,12 @@ function addHTMLListeners() {
     var speedSlider = document.getElementById("speedSlider");
     var randomButton = document.getElementById("randomButton");
     var hardcodedSelect = document.getElementById("hardcoded");
+    var startStopButton = document.getElementById("startStopButton");
+    var stepButton = document.getElementById("stepButton");
+
+    startStopButton.disabled = true;
+    stepButton.disabled = true;
+
     speedSlider.addEventListener("change", function () {
         tickDelay = maxTickDelay - speedSlider.value;
         SIMULATION.maxCounter = tickDelay;
@@ -72,6 +81,27 @@ function addHTMLListeners() {
         newSystem(1);
         hardcodedSelect.selectedIndex = 0;
     });
+    startStopButton.addEventListener("click", function () {
+        if (!GAME_ENGINE.reset && !SIMULATION.stopSimulation) {
+            var state = document.getElementById("state");
+            if (GAME_ENGINE.pause) {
+                GAME_ENGINE.pause = false;
+                state.innerHTML = "Running"
+                state.style.color = "green";
+                startStopButton.innerHTML = "Stop";
+            } else {
+                GAME_ENGINE.pause = true;
+                state.innerHTML = "Paused";
+                state.style.color = "red";
+                startStopButton.innerHTML = "Start";
+            }
+        }
+    });
+    stepButton.addEventListener("click", function () {
+        if (!GAME_ENGINE.reset && !SIMULATION.stopSimulation) {
+            SIMULATION.nextIteration();
+        }
+    });
 }
 
 function getParams() {
@@ -81,9 +111,32 @@ function getParams() {
     params.numsites = numsitesTF.value;
     var reachTF = document.getElementById("reachTF");
     params.reach = reachTF.value;
+    var sourceTF = document.getElementById("sourceTF");
+    params.sourceCount = sourceTF.value;
+    var sinkTF = document.getElementById("sinkTF");
+    params.sinkCount = sinkTF.value;
+}
+
+function setParams() {
+    var alphaTF = document.getElementById("alphaTF");
+    alphaTF.value = params.alpha;
+    var numsitesTF = document.getElementById("numsitesTF");
+    numsitesTF.value = params.numsites;
+    var reachTF = document.getElementById("reachTF");
+    reachTF.value = params.reach;
+
+    var sourceTF = document.getElementById("sourceTF");
+    sourceTF.value = params.sourceCount;
+    var sinkTF = document.getElementById("sinkTF");
+    sinkTF.value = params.sinkCount;
 }
 
 function newSystem(theMapType) {
+    var startStopButton = document.getElementById("startStopButton");
+    var stepButton = document.getElementById("stepButton");
+    startStopButton.disabled = false;
+    startStopButton.innerHTML = "Start";
+    stepButton.disabled = false;
     GAME_ENGINE.pause = true;
     GAME_ENGINE.reset = false;
     getParams();
