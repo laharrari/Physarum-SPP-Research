@@ -2,7 +2,7 @@ var SIMULATION;
 var ASSET_MANAGER = new AssetManager();
 var NODE_MAP;
 var myCanvas;
-params = {alpha: 1, numsites: 2, reach: 0.5};
+params = {alpha: 1, numsites: 6, reach: 0.5, sourceCount: 1, sinkCount: 1};
 
 ASSET_MANAGER.queueDownload("./img/physarum.jpg");
 ASSET_MANAGER.downloadAll(function () {

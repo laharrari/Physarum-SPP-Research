@@ -27,28 +27,39 @@ function NodeMap(theMapType) {
 }
 
 NodeMap.prototype.randomSystem = function () {
-    // ******************************* FIX THIS HARDCODE *******************************
-    SINK_COUNT = 1;
-    SOURCE_COUNT = 5;
-    // ******************************* FIX THIS HARDCODE *******************************
-    console.log(params);
+    var dropDownIndex = document.getElementById("network").selectedIndex;
+    SINK_COUNT = params.sinkCount;
+    SOURCE_COUNT = params.sourceCount;
     // creating random nodes
     for (var i = 0; i < params.numsites; i++) {
         // calculating a random x and y to position the node
         var x = Math.random() * 1;
         var y = Math.random() * 1;
         var type;
+
+        //**********************************NEED TO FIX PICKING SOURCE AND SINKS************************************************ */
         if (i !== 5) {
             type = NODE_TYPES.SOURCE;
         } else if (i === 5) {
             type = NODE_TYPES.SINK;
         }
+        //*********************************************************************************************************************** */
 
         NODES.push(new Node(x, y, i + 1, type));
         this.addAdjVertex(i + 1);
     }
-    // this.findSourceAndSink();
+    if (dropDownIndex === 0) {
+        this.populateEdges();
+        // Testing and correcting islands
+        console.log(this.adjList);
+        for (var i = 0; i < NODES.length; i++) {
+            this.depthFirstSearch(NODES[i].nodeLabel);
+        }
+    }
 
+}
+
+NodeMap.prototype.populateEdges = function () {
     // populating adjacency matrix for edges
     for (var i = 0; i < params.numsites; i++) {
         for (var j = i + 1; j < params.numsites; j++) {
@@ -68,13 +79,6 @@ NodeMap.prototype.randomSystem = function () {
                 }
             }
         }
-    }
-
-    // Testing and correcting islands
-    console.log(this.adjList);
-
-    for (var i = 0; i < NODES.length; i++) {
-        this.depthFirstSearch(NODES[i].nodeLabel);
     }
 }
 
@@ -141,16 +145,16 @@ NodeMap.prototype.hardcodedSystem = function () {
     SINK_COUNT = 1;
     SOURCE_COUNT = 1;
 
-     // Creating all node objects
-     var n1 = new Node(0.2, 0.5, 1, NODE_TYPES.SOURCE);
-     var n2 = new Node(0.8, 0.5, 2, NODE_TYPES.SINK);
-     var n3 = new Node(0.5, 0.2, 3, NODE_TYPES.OTHER);
-     var n4 = new Node(0.5, 0.8, 4, NODE_TYPES.OTHER);
+    // Creating all node objects
+    var n1 = new Node(0.2, 0.5, 1, NODE_TYPES.SOURCE);
+    var n2 = new Node(0.8, 0.5, 2, NODE_TYPES.SINK);
+    var n3 = new Node(0.5, 0.2, 3, NODE_TYPES.OTHER);
+    var n4 = new Node(0.5, 0.8, 4, NODE_TYPES.OTHER);
 
-     NODES[0] = n1;
-     NODES[1] = n2;
-     NODES[2] = n3;
-     NODES[3] = n4;
+    NODES[0] = n1;
+    NODES[1] = n2;
+    NODES[2] = n3;
+    NODES[3] = n4;
     if (dropdownIndex > 0) {
         if (dropdownIndex === 1) {
             // Creating all edge objects
@@ -216,7 +220,7 @@ NodeMap.prototype.hardcodedSystem = function () {
             var node5 = new Node(0.8, 0.85, 5, NODE_TYPES.SOURCE);
             var node6 = new Node(0.5, 0.85, 6, NODE_TYPES.SOURCE);
             var node7 = new Node(0.35, 0.65, 7, NODE_TYPES.SOURCE);
-            
+
             NODES[0] = node1;
             NODES[1] = node2;
             NODES[2] = node3;
@@ -254,7 +258,7 @@ NodeMap.prototype.hardcodedSystem = function () {
             var node11 = new Node(0.95, 1.0, 11, NODE_TYPES.SOURCE);
             var node12 = new Node(0.35, 1.0, 12, NODE_TYPES.SOURCE);
             var node13 = new Node(0.05, 0.65, 13, NODE_TYPES.SOURCE);
-            
+
             NODES[0] = node1;
             NODES[1] = node2;
             NODES[2] = node3;
@@ -298,34 +302,6 @@ NodeMap.prototype.hardcodedSystem = function () {
     }
 }
 
-NodeMap.prototype.findSourceAndSink = function () {
-    //Ensures n1 is far most left node, and n2 is far most right node
-    for (let i = 0; i < params.numsites; i++) {
-        //makes far most left node the source
-        if (NODES[i].x < NODES[0].x) {
-            var tempNode = NODES[i];
-            var tempLabel = NODES[i].nodeLabel;
-            NODES[i] = NODES[0];
-            NODES[0] = tempNode;
-            NODES[0].nodeType = NODE_TYPES.SOURCE;
-            NODES[i].nodeType = NODE_TYPES.OTHER;
-            NODES[0].nodeLabel = NODES[i].nodeLabel;
-            NODES[i].nodeLabel = tempLabel;
-        }
-
-        //makes far most right node the source
-        if (NODES[i].x > NODES[1].x) {
-            var tempNode = NODES[i];
-            var tempLabel = NODES[i].nodeLabel;
-            NODES[i] = NODES[1];
-            NODES[1] = tempNode;
-            NODES[1].nodeType = NODE_TYPES.SINK;
-            NODES[i].nodeType = NODE_TYPES.OTHER;
-            NODES[1].nodeLabel = NODES[i].nodeLabel;
-            NODES[i].nodeLabel = tempLabel;
-        }
-    }
-}
 
 // drawing
 NodeMap.prototype.drawNodeMap = function () {
@@ -368,7 +344,7 @@ NodeMap.prototype.drawNodeMap = function () {
         var rad = Math.sqrt(Math.max(node.pressure * 10, Math.min(2 * (1 + sites[i]), 50)));
         GAME_ENGINE.ctx.arc(w * node.x + x, h * node.y + y, rad, 0, 2 * Math.PI, false);
         var dist = Math.sqrt(node.x * node.x + node.y * node.y) / Math.sqrt(2);
-        
+
         color = "black";
         if (node.nodeType === NODE_TYPES.SINK) {
             color = "red";

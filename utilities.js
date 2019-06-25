@@ -1,5 +1,8 @@
 // Code provided by Dr. Chris Marriott.
 
+/**
+ * Finds the distance between two nodes.
+ */
 var distance = function (p, q) {
     return Math.sqrt((p.x - q.x) * (p.x - q.x) + (p.y - q.y) * (p.y - q.y));
 }
@@ -108,6 +111,10 @@ function getParams() {
     params.numsites = numsitesTF.value;
     var reachTF = document.getElementById("reachTF");
     params.reach = reachTF.value;
+    var sourceTF = document.getElementById("sourceTF");
+    params.sourceCount = sourceTF.value;
+    var sinkTF = document.getElementById("sinkTF");
+    params.sinkCount = sinkTF.value;
 }
 
 function setParams() {
@@ -117,6 +124,11 @@ function setParams() {
     numsitesTF.value = params.numsites;
     var reachTF = document.getElementById("reachTF");
     reachTF.value = params.reach;
+
+    var sourceTF = document.getElementById("sourceTF");
+    sourceTF.value = params.sourceCount;
+    var sinkTF = document.getElementById("sinkTF");
+    sinkTF.value = params.sinkCount;
 }
 
 function newSystem(theMapType) {
